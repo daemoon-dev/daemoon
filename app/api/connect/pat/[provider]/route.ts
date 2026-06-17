@@ -18,8 +18,9 @@ export async function POST(
     const userId = await requireUserId();
     const { provider } = await context.params;
     const connector = getConnector(provider);
-    if (connector.oauthSupported || !connector.validatePat) {
-      return NextResponse.json({ error: "Use OAuth flow for this provider" }, { status: 400 });
+    // v0.4 — PAT 도 OAuth-지원 connector 에 허용 (Vercel/GitHub 도 PAT 받음).
+    if (!connector.validatePat) {
+      return NextResponse.json({ error: "PAT input not supported for this provider" }, { status: 400 });
     }
     const body = await req.json();
     const token = (body?.token as string | undefined)?.trim();

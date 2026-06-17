@@ -1,0 +1,136 @@
+/* PAT 입력 페이지 — Cloudflare / Supabase / Vercel / GitHub 공용. */
+"use client";
+
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
+
+interface ProviderUiInfo {
+  id: string;
+  label: string;
+  instruction: React.ReactNode;
+  helpUrl: string;
+}
+
+const INFO: Record<string, ProviderUiInfo> = {
+  cloudflare: {
+    id: "cloudflare",
+    label: "Cloudflare",
+    instruction: (
+      <>
+        Cloudflare dashboard → My Profile → API Tokens → <b>Create Token</b> → \"Edit zone DNS\"
+        template 또는 Custom token (Zone:Read + DNS:Edit). 생성된 token 을 아래 붙여넣기.
+      </>
+    ),
+    helpUrl: "https://dash.cloudflare.com/profile/api-tokens",
+  },
+  supabase: {
+    id: "supabase",
+    label: "Supabase",
+    instruction: (
+      <>
+        Supabase dashboard → Account → Access Tokens → <b>Generate new token</b>. 표시되는 PAT 를 아래 붙여넣기.
+      </>
+    ),
+    helpUrl: "https://supabase.com/dashboard/account/tokens",
+  },
+  vercel: {
+    id: "vercel",
+    label: "Vercel",
+    instruction: (
+      <>
+        Vercel → Settings → Tokens → <b>Create</b>. Scope 는 \"Full Account\" 또는 사용할 team. 토큰 붙여넣기.
+      </>
+    ),
+    helpUrl: "https://vercel.com/account/tokens",
+  },
+  github: {
+    id: "github",
+    label: "GitHub",
+    instruction: (
+      <>
+        GitHub → Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.
+        Repository access: All / scopes: Contents (R/W) + Workflows (R/W) + Metadata (R).
+      </>
+    ),
+    helpUrl: "https://github.com/settings/personal-access-tokens/new",
+  },
+};
+
+export default function ConnectPatPage({ params }: { params: Promise<{ provider: string }> }) {
+  const { provider } = use(params);
+  const info = INFO[provider];
+  const router = useRouter();
+  const [token, setToken] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    if (!info) setErr(`Unknown provider: ${provider}`);
+  }, [info, provider]);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    try {
+      const res = await fetch(`/api/connect/pat/${provider}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: token.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+      router.push(`/dashboard?connected=${provider}`);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    }
+    setBusy(false);
+  }
+
+  if (!info) {
+    return (
+      <main className="min-h-screen bg-neutral-950 text-neutral-100 p-8">
+        <p className="text-red-400">{err}</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-neutral-950 text-neutral-100 p-8">
+      <div className="max-w-lg mx-auto">
+        <a href="/dashboard" className="text-xs text-neutral-500 hover:text-neutral-300">← Dashboard</a>
+        <h1 className="text-3xl font-bold mt-4 mb-2">Connect {info.label}</h1>
+        <p className="text-neutral-400 mb-6">{info.instruction}</p>
+        <a
+          href={info.helpUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="block mb-6 text-sm text-blue-400 hover:underline"
+        >
+          Open {info.label} token page →
+        </a>
+        <form onSubmit={submit} className="space-y-3">
+          <input
+            value={token}
+            onChange={e => setToken(e.target.value)}
+            placeholder="paste token here"
+            required
+            type="password"
+            className="w-full px-4 py-3 rounded-md border border-neutral-800 bg-neutral-900 placeholder:text-neutral-600 focus:outline-none focus:border-neutral-600 font-mono"
+          />
+          <button
+            type="submit"
+            disabled={busy || !token}
+            className="w-full px-4 py-3 rounded-md bg-white text-neutral-900 font-medium hover:bg-neutral-200 transition disabled:opacity-50"
+          >
+            {busy ? "Validating…" : "Connect"}
+          </button>
+        </form>
+        {err && <div className="mt-4 text-sm text-red-400">{err}</div>}
+        <p className="mt-8 text-xs text-neutral-600 leading-relaxed">
+          Your token is encrypted with AES-256-GCM (envelope encryption) before storage.
+          It is never logged. You can disconnect any time.
+        </p>
+      </div>
+    </main>
+  );
+}

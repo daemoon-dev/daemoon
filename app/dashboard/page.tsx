@@ -40,19 +40,14 @@ export default async function Dashboard() {
                 </div>
                 {isConn ? (
                   <span className="text-emerald-400 text-sm">✓ Connected</span>
-                ) : c.oauthSupported ? (
-                  <a
-                    href={`/api/oauth/${c.id}/start`}
-                    className="px-4 py-2 rounded-md bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-200"
-                  >
-                    Connect
-                  </a>
                 ) : (
+                  // v0.4 — 모든 connector 가 PAT 도 지원. UX 단순화 위해 PAT 페이지 우선.
+                  // OAuth 가 셋업되면 그때 OAuth 버튼 추가.
                   <a
                     href={`/connect/${c.id}`}
                     className="px-4 py-2 rounded-md bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-200"
                   >
-                    Paste token
+                    Connect
                   </a>
                 )}
               </div>

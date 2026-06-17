@@ -131,7 +131,21 @@ const deploy: ToolDef<{ projectId: string; gitRepoId: string; ref?: string }, { 
 export const vercelConnector: Connector = {
   id: "vercel",
   label: "Vercel",
+  // MVP: 둘 다 지원. UI 에서 OAuth 우선 노출, 환경변수 없으면 PAT 입력 form.
   oauthSupported: true,
+
+  async validatePat(pat: string) {
+    try {
+      const res = await fetch(`${API}/v2/user`, {
+        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemun/0.1" },
+      });
+      if (!res.ok) return { ok: false as const, reason: `Vercel API ${res.status}` };
+      const user = (await res.json()) as { user?: { id?: string; username?: string; email?: string } };
+      return { ok: true as const, meta: { username: user.user?.username, email: user.user?.email, id: user.user?.id } };
+    } catch (e) {
+      return { ok: false as const, reason: e instanceof Error ? e.message : "unknown" };
+    }
+  },
 
   oauthStart(redirectUri, state): OAuthStart {
     const clientId = process.env.VERCEL_CLIENT_ID;

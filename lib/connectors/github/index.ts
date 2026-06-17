@@ -87,6 +87,23 @@ export const githubConnector: Connector = {
   label: "GitHub",
   oauthSupported: true,
 
+  async validatePat(pat: string) {
+    try {
+      const res = await fetch(`${API}/user`, {
+        headers: {
+          Authorization: `Bearer ${pat}`,
+          Accept: "application/vnd.github+json",
+          "User-Agent": "Daemun/0.1",
+        },
+      });
+      if (!res.ok) return { ok: false as const, reason: `GitHub API ${res.status}` };
+      const user = (await res.json()) as { id?: number; login?: string };
+      return { ok: true as const, meta: { login: user.login, id: user.id } };
+    } catch (e) {
+      return { ok: false as const, reason: e instanceof Error ? e.message : "unknown" };
+    }
+  },
+
   oauthStart(redirectUri, state): OAuthStart {
     const clientId = process.env.GITHUB_CLIENT_ID;
     if (!clientId) throw new Error("GITHUB_CLIENT_ID not configured");
