@@ -1,4 +1,4 @@
-# Daemun — SPEC v0
+# Daemoon — SPEC v0
 
 > 대문 (大門) + Daemon. AI 시대의 dev infra gateway.
 > 작성: 2026-06-17 KST · 작성자: Jenny + Claude
@@ -12,7 +12,7 @@
 지금 비개발자가 AI 코딩 도구 (Claude Code / Cursor / Bolt 등) 로 앱을 만들려면 매번:
 - Cloudflare 가서 토큰 만들어와 / Vercel CLI 로그인 / Supabase PAT 발급 / Google Cloud Console 깊은 메뉴 헤매기
 
-→ Daemun 은 *이 모든 인프라 접근* 을 한 번에 열어주는 *AI agent용 gateway*.
+→ Daemoon 은 *이 모든 인프라 접근* 을 한 번에 열어주는 *AI agent용 gateway*.
 
 ---
 
@@ -46,10 +46,10 @@
 ```
 사용자: \"내 첫 앱 만들어줘. 도메인 이름은 mycoolapp.com\"
 AI:
-  • Daemun 통해 도메인 \$15 결제 요청 → 사용자가 카드 정보 1번 → 구매 완료
-  • Daemun 통해 GitHub repo 생성 (Next.js boilerplate)
-  • Daemun 통해 Supabase 프로젝트 만들고 DB schema 깔기
-  • Daemun 통해 Vercel 프로젝트 + 도메인 연결 + 배포
+  • Daemoon 통해 도메인 \$15 결제 요청 → 사용자가 카드 정보 1번 → 구매 완료
+  • Daemoon 통해 GitHub repo 생성 (Next.js boilerplate)
+  • Daemoon 통해 Supabase 프로젝트 만들고 DB schema 깔기
+  • Daemoon 통해 Vercel 프로젝트 + 도메인 연결 + 배포
   • Cloudflare DNS 설정
   • 5분 후 → \"https://mycoolapp.com 라이브.\"
 ```
@@ -66,7 +66,7 @@ AI:
 3. **Vercel** — 빌드 + 배포
 4. **Supabase** — DB + auth
 
-### Daemun 구성요소
+### Daemoon 구성요소
 1. **MCP server** (TS, 표준 Anthropic MCP SDK) — agent 가 부르는 입구
 2. **Provider connectors** — 각 service OAuth/PAT 받아 wrap + 표준 인터페이스 노출
 3. **Token vault** — 암호화 (Supabase + KMS), per-user 스코프 격리
@@ -74,7 +74,7 @@ AI:
 
 ### MVP 안에 결제? — **X**
 - 도메인 살 때만 사용자에게 \"이 카드로 결제\" 외부 링크 띄움 (Cloudflare Registrar 결제 페이지)
-- Daemun 자체 구독/사용량 과금은 Phase 2
+- Daemoon 자체 구독/사용량 과금은 Phase 2
 
 ### MVP 사용자 언어
 - 한국어 + 영어 (i18n 처음부터)
@@ -92,7 +92,7 @@ AI:
 | 결제 (Phase 2) | Stripe Connect | MoR 리스크 회피 |
 | Token vault | Supabase + envelope encryption (AES-256 + KMS key) | per-user 격리 |
 
-배포 자체도 Daemun 으로 — *bootstrap inception*.
+배포 자체도 Daemoon 으로 — *bootstrap inception*.
 
 ---
 
@@ -122,8 +122,8 @@ AI:
 | # | 질문 | 결정 |
 |---|---|---|
 | Q1 | 사용자 회원가입 방식 | **Google OAuth 단일** (Kakao X — 글로벌이므로) |
-| Q2 | 도메인 | **daemun.ai + daemun.dev 둘 다** (내일 구매) |
-| Q3 | 코드명 | **Daemun** 확정 (브랜드명 동일) |
+| Q2 | 도메인 | **daemoon.ai + daemoon.dev 둘 다** (내일 구매) |
+| Q3 | 코드명 | **Daemoon** 확정 (브랜드명 동일) |
 | Q4 | MVP launch 타깃 | TBD (만들어가며 결정) |
 | Q5 | 가격 | **베타 무료** (Phase 2 에서 결정) |
 | Q6 | open source | **open core** — MCP server + provider connectors 공개 / hosted vault + UX + 결제 비공개 |
@@ -135,9 +135,9 @@ AI:
 ## 10. Next steps (이 spec 확정 후)
 
 1. Q1-8 Jenny 결정 → 위 표 채우기
-2. \`/Users/descartes/daemun/\` 에 Next.js boilerplate setup
-3. Daemun 자체용 Supabase 프로젝트 신규 (다른 ref)
-4. Daemun 자체용 Vercel 프로젝트 신규
-5. Daemun 자체용 GitHub repo (private 시작)
+2. \`/Users/descartes/daemoon/\` 에 Next.js boilerplate setup
+3. Daemoon 자체용 Supabase 프로젝트 신규 (다른 ref)
+4. Daemoon 자체용 Vercel 프로젝트 신규
+5. Daemoon 자체용 GitHub repo (private 시작)
 6. *Provider 1 = Vercel connector* 부터 (가장 OAuth 친화) → 1주 안에 \"AI가 Vercel 배포\" 동작
 7. Provider 2-4 1주씩 → MVP 4주 안에

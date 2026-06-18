@@ -1,4 +1,4 @@
-# Daemun — Claude Code starter
+# Daemoon — Claude Code starter
 
 ## 무엇
 
@@ -9,7 +9,7 @@
 
 ## 작업 디렉토리
 
-`/Users/descartes/daemun/` — 본 프로젝트. Bible (TheSudoku) / Posy 등 별개.
+`/Users/descartes/daemoon/` — 본 프로젝트. Bible (TheSudoku) / Posy 등 별개.
 
 ## Stack
 
@@ -21,7 +21,7 @@
 ## Folder
 
 ```
-/Users/descartes/daemun/
+/Users/descartes/daemoon/
   app/                 # Next.js App Router
   lib/                 # shared utils + Supabase client + provider connectors
   mcp/                 # MCP server (별도 entrypoint, npm script로 실행)
@@ -39,7 +39,7 @@
 ## 결정 요약 (SPEC §9)
 
 - 회원가입: Google OAuth 단일
-- 도메인: daemun.ai + daemun.dev 둘 다
+- 도메인: daemoon.ai + daemoon.dev 둘 다
 - 가격: 베타 무료
 - 오픈소스: open core (MCP + connectors 공개, vault/UX/billing 비공개)
 - 첫 시장: 글로벌 영어

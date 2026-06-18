@@ -1,4 +1,4 @@
-/* Daemun — server-side Supabase auth helper.
+/* Daemoon — server-side Supabase auth helper.
  *
  * Next.js App Router (route handlers / server actions) 에서 호출.
  * @supabase/ssr 의 createServerClient 로 cookie 동기화.

@@ -25,11 +25,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       });
       if (error) throw error;
     } else {
-      return NextResponse.redirect(new URL("/login?error=missing_params", req.url));
+      return NextResponse.redirect(new URL("/?error=missing_params", req.url));
     }
     return NextResponse.redirect(new URL(next, req.url));
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(msg)}`, req.url));
+    return NextResponse.redirect(new URL(`/?error=${encodeURIComponent(msg)}`, req.url));
   }
 }

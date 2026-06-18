@@ -1,4 +1,4 @@
-/* Daemun — Supabase connector (Management API).
+/* Daemoon — Supabase connector (Management API).
  *
  * Supabase Management 는 *Personal Access Token (PAT)* 만 — OAuth 없음.
  * 사용자가 https://supabase.com/dashboard/account/tokens 에서 만들어 paste.
@@ -20,7 +20,7 @@ async function sb<T>(path: string, token: string, init: RequestInit = {}): Promi
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
-      "User-Agent": "Daemun/0.1",
+      "User-Agent": "Daemoon/0.1",
       ...(init.headers ?? {}),
     },
   });
@@ -125,7 +125,7 @@ export const supabaseConnector: Connector = {
   async validatePat(pat: string) {
     try {
       const res = await fetch(new URL("/v1/projects", API), {
-        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemun/0.1" },
+        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemoon/0.1" },
       });
       if (!res.ok) return { ok: false as const, reason: `Supabase API ${res.status}` };
       const list = (await res.json()) as Array<unknown>;

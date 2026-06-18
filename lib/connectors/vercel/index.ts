@@ -1,9 +1,9 @@
-/* Daemun — Vercel connector.
+/* Daemoon — Vercel connector.
  *
  * OAuth (Vercel Integration / OAuth App):
  *   - authorize:  https://vercel.com/oauth/authorize
  *   - exchange:   POST https://api.vercel.com/v2/oauth/access_token
- *   - 환경변수:    VERCEL_CLIENT_ID, VERCEL_CLIENT_SECRET (Daemun 의 Vercel Integration 등록 후)
+ *   - 환경변수:    VERCEL_CLIENT_ID, VERCEL_CLIENT_SECRET (Daemoon 의 Vercel Integration 등록 후)
  *
  * Vercel API base: https://api.vercel.com
  * 인증 헤더: Authorization: Bearer <token>
@@ -39,7 +39,7 @@ async function vfetch<T>(opts: VercelFetchOpts): Promise<T> {
     headers: {
       Authorization: `Bearer ${opts.token}`,
       "Content-Type": "application/json",
-      "User-Agent": "Daemun/0.1 (+https://daemun.ai)",
+      "User-Agent": "Daemoon/0.1 (+https://daemoon.ai)",
     },
     body: opts.body ? JSON.stringify(opts.body) : undefined,
   });
@@ -137,7 +137,7 @@ export const vercelConnector: Connector = {
   async validatePat(pat: string) {
     try {
       const res = await fetch(`${API}/v2/user`, {
-        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemun/0.1" },
+        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemoon/0.1" },
       });
       if (!res.ok) return { ok: false as const, reason: `Vercel API ${res.status}` };
       const user = (await res.json()) as { user?: { id?: string; username?: string; email?: string } };

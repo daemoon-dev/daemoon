@@ -7,7 +7,7 @@ import { getConnector } from "@/lib/connectors/registry";
 import { requireUserId } from "@/lib/auth";
 import { saveToken } from "@/lib/vault/store";
 
-const STATE_COOKIE = "daemun_oauth_state";
+const STATE_COOKIE = "daemoon_oauth_state";
 
 export async function GET(
   req: NextRequest,

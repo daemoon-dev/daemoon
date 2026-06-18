@@ -1,4 +1,4 @@
-/* Daemun dashboard — provider 연결 상태 + connect/disconnect.
+/* Daemoon dashboard — provider 연결 상태 + connect/disconnect.
  *
  * Server component — 로그인 강제 + DB 에서 연결 상태 fetch.
  */
@@ -13,7 +13,7 @@ export default async function Dashboard() {
   const { data: userRes } = await sb.auth.getUser();
   if (!userRes.user) redirect("/");
 
-  const { data: connRows } = await sb.from("daemun_my_connections").select("*");
+  const { data: connRows } = await sb.from("daemoon_my_connections").select("*");
   const connected = new Set((connRows ?? []).map(r => r.provider as string));
 
   const connectors = listConnectors();

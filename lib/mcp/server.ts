@@ -1,11 +1,11 @@
-/* Daemun MCP server.
+/* Daemoon MCP server.
  *
  * MCP 표준 SDK 위에서 *AI 에이전트가 호출하는 단일 endpoint*.
  *
  * Tool naming: "<provider>.<action>" — connector 가 정의한 그대로 expose.
  *   예: vercel.list_projects / vercel.create_project / vercel.deploy
  *
- * 인증: MCP 호출 시 Daemun 가 *사용자 식별 토큰* 을 받음 (env var DAEMUN_USER_TOKEN
+ * 인증: MCP 호출 시 Daemoon 가 *사용자 식별 토큰* 을 받음 (env var DAEMOON_USER_TOKEN
  *       또는 MCP transport 의 custom header). 해당 토큰으로 vault 에서 provider token 꺼냄.
  *
  * 보안:
@@ -19,14 +19,14 @@ import { listConnectors, getConnector } from "../connectors/registry";
 import { loadToken } from "../vault/store";
 import type { ToolContext } from "../connectors/types";
 
-interface DaemunMcpOptions {
-  /** 호출자의 Daemun 사용자 id — vault key. */
+interface DaemoonMcpOptions {
+  /** 호출자의 Daemoon 사용자 id — vault key. */
   userId: string;
 }
 
-export function createDaemunMcpServer(opts: DaemunMcpOptions): Server {
+export function createDaemoonMcpServer(opts: DaemoonMcpOptions): Server {
   const server = new Server(
-    { name: "daemun", version: "0.1.0" },
+    { name: "daemoon", version: "0.1.0" },
     { capabilities: { tools: {} } },
   );
 
@@ -75,7 +75,7 @@ export function createDaemunMcpServer(opts: DaemunMcpOptions): Server {
 
 /** stdio 모드로 실행 (Claude Code 등이 직접 spawn 할 때). */
 export async function runStdio(userId: string): Promise<void> {
-  const server = createDaemunMcpServer({ userId });
+  const server = createDaemoonMcpServer({ userId });
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }

@@ -1,4 +1,4 @@
-# Daemun MCP Server
+# Daemoon MCP Server
 
 표준 Anthropic MCP SDK 기반 server.
 사용자 token vault 에서 token 꺼내 provider connector 로 위임.

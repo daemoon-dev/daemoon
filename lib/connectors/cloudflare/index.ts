@@ -1,8 +1,8 @@
-/* Daemun — Cloudflare connector.
+/* Daemoon — Cloudflare connector.
  *
  * Cloudflare 는 *OAuth 미지원* — *API Token* 만 사용 (사용자 직접 만들어서 paste).
  *   1) 사용자가 dash.cloudflare.com/profile/api-tokens 가서 토큰 생성
- *   2) Daemun 가 토큰 유효성 검증 (GET /user/tokens/verify)
+ *   2) Daemoon 가 토큰 유효성 검증 (GET /user/tokens/verify)
  *   3) vault 저장 후 사용
  *
  * MVP 도구:
@@ -23,7 +23,7 @@ async function cf<T>(path: string, token: string, init: RequestInit = {}): Promi
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
-      "User-Agent": "Daemun/0.1",
+      "User-Agent": "Daemoon/0.1",
       ...(init.headers ?? {}),
     },
   });
@@ -96,7 +96,7 @@ export const cloudflareConnector: Connector = {
   async validatePat(pat: string) {
     try {
       const res = await fetch(new URL("user/tokens/verify", API + "/"), {
-        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemun/0.1" },
+        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemoon/0.1" },
       });
       const json = (await res.json()) as { success: boolean; result?: { status: string; id?: string } };
       if (!res.ok || !json.success) return { ok: false as const, reason: "토큰 검증 실패 (Cloudflare API)" };

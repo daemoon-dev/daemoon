@@ -1,4 +1,4 @@
-/* Daemun — provider connector base types.
+/* Daemoon — provider connector base types.
  *
  * 모든 provider (Vercel, Cloudflare, GitHub, Supabase, ...) 는 이 interface 를 따른다.
  * 같은 shape 라서 MCP server 가 동적으로 등록한다.
@@ -12,7 +12,7 @@
  *
  * 이로써:
  *   - Connector = stateless (open source 안전)
- *   - Vault    = stateful (Daemun 내부, 비공개)
+ *   - Vault    = stateful (Daemoon 내부, 비공개)
  */
 
 export type JsonSchema = Record<string, unknown>;
@@ -33,14 +33,14 @@ export interface ToolContext {
   token: string | null;
   /** 호출하는 user id (감사 로그용). */
   userId: string;
-  /** Daemun 내부 옵션 (rate-limit / region 등). */
+  /** Daemoon 내부 옵션 (rate-limit / region 등). */
   options?: Record<string, unknown>;
 }
 
 export interface OAuthStart {
   /** 사용자가 새 탭에서 열어야 할 provider 의 authorize URL. */
   authorizeUrl: string;
-  /** Daemun 가 callback 검증할 때 비교할 state 값. */
+  /** Daemoon 가 callback 검증할 때 비교할 state 값. */
   state: string;
 }
 

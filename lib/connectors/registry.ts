@@ -1,4 +1,4 @@
-/* Daemun connector registry — provider id → Connector 매핑 단일 source.
+/* Daemoon connector registry — provider id → Connector 매핑 단일 source.
  *
  * 새 provider 추가 시 여기에 import + 등록만 하면 MCP/OAuth/UI 모두 자동 반영.
  */

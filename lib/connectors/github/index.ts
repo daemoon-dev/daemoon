@@ -1,4 +1,4 @@
-/* Daemun — GitHub connector.
+/* Daemoon — GitHub connector.
  *
  * OAuth:
  *   authorize: https://github.com/login/oauth/authorize
@@ -24,7 +24,7 @@ async function gh<T>(path: string, token: string, init: RequestInit = {}): Promi
       Authorization: `Bearer ${token}`,
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "Daemun/0.1",
+      "User-Agent": "Daemoon/0.1",
       ...(init.headers ?? {}),
     },
   });
@@ -93,7 +93,7 @@ export const githubConnector: Connector = {
         headers: {
           Authorization: `Bearer ${pat}`,
           Accept: "application/vnd.github+json",
-          "User-Agent": "Daemun/0.1",
+          "User-Agent": "Daemoon/0.1",
         },
       });
       if (!res.ok) return { ok: false as const, reason: `GitHub API ${res.status}` };

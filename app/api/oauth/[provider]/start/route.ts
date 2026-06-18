@@ -9,7 +9,7 @@ import { randomBytes } from "node:crypto";
 import { getConnector } from "@/lib/connectors/registry";
 import { requireUserId } from "@/lib/auth";
 
-const STATE_COOKIE = "daemun_oauth_state";
+const STATE_COOKIE = "daemoon_oauth_state";
 
 export async function GET(
   req: NextRequest,

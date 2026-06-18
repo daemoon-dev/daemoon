@@ -1,4 +1,4 @@
-/* Daemun token vault — envelope encryption.
+/* Daemoon token vault — envelope encryption.
  *
  * Threat model:
  *   - DB 가 통째로 유출되어도 토큰이 평문 노출되면 안 됨 (= env 의 master key 없으면 못 풀게).
@@ -53,8 +53,8 @@ function aesDecrypt(key: Buffer, ct: Buffer, iv: Buffer, tag: Buffer): Buffer {
 }
 
 function getMasterKey(): { key: Buffer; version: number } {
-  const raw = process.env.DAEMUN_VAULT_MASTER_KEY;
-  if (!raw) throw new Error("DAEMUN_VAULT_MASTER_KEY not configured");
+  const raw = process.env.DAEMOON_VAULT_MASTER_KEY;
+  if (!raw) throw new Error("DAEMOON_VAULT_MASTER_KEY not configured");
   // 형식: "v1:<base64-32byte>" — version prefix.
   const m = /^v(\d+):(.+)$/.exec(raw.trim());
   if (!m) throw new Error("master key format invalid (expect v<n>:<base64>)");

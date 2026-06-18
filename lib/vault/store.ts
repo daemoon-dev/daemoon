@@ -1,7 +1,7 @@
-/* Daemun vault store — Supabase 기반 per-user token 보관.
+/* Daemoon vault store — Supabase 기반 per-user token 보관.
  *
  * 스키마 (Supabase):
- *   create table public.daemun_tokens (
+ *   create table public.daemoon_tokens (
  *     id            uuid primary key default gen_random_uuid(),
  *     user_id       uuid not null references auth.users(id) on delete cascade,
  *     provider      text not null,             -- 'vercel', 'cloudflare', ...
@@ -20,9 +20,9 @@
  *     updated_at    timestamptz not null default now(),
  *     unique (user_id, provider)
  *   );
- *   alter table public.daemun_tokens enable row level security;
+ *   alter table public.daemoon_tokens enable row level security;
  *   -- RLS: anon/auth 모두 SELECT/INSERT/UPDATE 차단. service_role 만.
- *   revoke all on public.daemun_tokens from anon, authenticated;
+ *   revoke all on public.daemoon_tokens from anon, authenticated;
  *
  * 모든 vault 접근은 *service_role* 키 사용 (서버 사이드만).
  */
@@ -56,7 +56,7 @@ export async function saveToken(
   const enc = encryptToken(payload.token);
   const refreshEnc = payload.refreshToken ? encryptToken(payload.refreshToken) : null;
   const { error } = await client()
-    .from("daemun_tokens")
+    .from("daemoon_tokens")
     .upsert(
       {
         user_id: userId,
@@ -84,7 +84,7 @@ export async function loadToken(
   provider: string,
 ): Promise<StoredToken | null> {
   const { data, error } = await client()
-    .from("daemun_tokens")
+    .from("daemoon_tokens")
     .select("*")
     .eq("user_id", userId)
     .eq("provider", provider)
@@ -115,7 +115,7 @@ export async function loadToken(
 
 export async function deleteToken(userId: string, provider: string): Promise<void> {
   const { error } = await client()
-    .from("daemun_tokens")
+    .from("daemoon_tokens")
     .delete()
     .eq("user_id", userId)
     .eq("provider", provider);

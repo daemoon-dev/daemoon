@@ -9,7 +9,7 @@
  *   "params": { name: "vercel.list_projects", arguments: {...} }
  * }
  *
- * 인증: Daemun 사용자 *세션 쿠키* (브라우저) 또는 *PAT 헤더* `Authorization: Bearer dmn_xxx`
+ * 인증: Daemoon 사용자 *세션 쿠키* (브라우저) 또는 *PAT 헤더* `Authorization: Bearer dmn_xxx`
  *       MVP 는 세션만, PAT 는 Phase 2.
  */
 import { NextRequest, NextResponse } from "next/server";
