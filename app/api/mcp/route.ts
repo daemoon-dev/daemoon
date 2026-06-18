@@ -1,26 +1,38 @@
-/* HTTP-friendly MCP tools endpoint (간단 JSON-RPC 흉내).
+/* HTTP MCP endpoint — Claude Code / Cursor 등이 호출.
  *
- * Claude Code 가 표준 MCP stdio 가 아닌 *HTTP MCP* 로 호출할 때 쓰는 변형.
- * 본격적인 streaming MCP 는 별 transport 깔지만, MVP 에선 단발 POST 로 충분.
+ * 인증:
+ *   1) `Authorization: Bearer dmn_xxx` (PAT)  → MCP client 용 (주된 경로)
+ *   2) 세션 쿠키 → 로그인된 브라우저 호출 (대시보드 디버그용)
  *
  * POST /api/mcp
- * {
- *   "method": "tools/list" | "tools/call",
- *   "params": { name: "vercel.list_projects", arguments: {...} }
- * }
- *
- * 인증: Daemoon 사용자 *세션 쿠키* (브라우저) 또는 *PAT 헤더* `Authorization: Bearer dmn_xxx`
- *       MVP 는 세션만, PAT 는 Phase 2.
+ * { "method": "tools/list" }
+ * { "method": "tools/call", "params": { name: "vercel.list_projects", arguments: {...} } }
  */
 import { NextRequest, NextResponse } from "next/server";
 import { requireUserId } from "@/lib/auth";
+import { lookupPat } from "@/lib/pat";
 import { getConnector, listConnectors } from "@/lib/connectors/registry";
 import { loadToken } from "@/lib/vault/store";
 import type { ToolContext } from "@/lib/connectors/types";
 
+async function resolveUserId(req: NextRequest): Promise<string | null> {
+  const auth = req.headers.get("authorization") || req.headers.get("Authorization");
+  if (auth?.startsWith("Bearer ")) {
+    const raw = auth.slice(7).trim();
+    const uid = await lookupPat(raw);
+    if (uid) return uid;
+  }
+  try {
+    return await requireUserId();
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    const userId = await requireUserId();
+    const userId = await resolveUserId(req);
+    if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
     const body = await req.json();
     const method = body?.method as string | undefined;
 
@@ -52,9 +64,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "unknown method" }, { status: 400 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (msg === "UNAUTHENTICATED") {
-      return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
-    }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

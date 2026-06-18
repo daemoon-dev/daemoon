@@ -5,6 +5,7 @@
 import { redirect } from "next/navigation";
 import { listConnectors } from "@/lib/connectors/registry";
 import { getServerSupabase } from "@/lib/auth";
+import { InstallMcp } from "./InstallMcp";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +30,11 @@ export default async function Dashboard() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 p-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Connections</h1>
-        <p className="text-neutral-400 mb-8">
-          Connect each provider once. AI agents will use these for you.
+        <InstallMcp />
+
+        <h2 className="text-xl font-semibold mb-2">Connections</h2>
+        <p className="text-neutral-400 text-sm mb-4">
+          Connect each provider once. The agent uses these via the MCP token above.
         </p>
         <div className="grid gap-3">
           {connectors.map(c => {
