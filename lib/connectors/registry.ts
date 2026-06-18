@@ -7,12 +7,14 @@ import { vercelConnector } from "./vercel";
 import { githubConnector } from "./github";
 import { cloudflareConnector } from "./cloudflare";
 import { supabaseConnector } from "./supabase";
+import { gcpConnector } from "./gcp";
 
 export const CONNECTORS: Record<string, Connector> = {
   [vercelConnector.id]: vercelConnector,
   [githubConnector.id]: githubConnector,
   [cloudflareConnector.id]: cloudflareConnector,
   [supabaseConnector.id]: supabaseConnector,
+  [gcpConnector.id]: gcpConnector,
 };
 
 export function getConnector(id: string): Connector {

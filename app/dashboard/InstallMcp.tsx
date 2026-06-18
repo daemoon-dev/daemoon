@@ -124,12 +124,25 @@ export function InstallMcp() {
           </summary>
           <ul className="mt-2 space-y-1">
             {pats.map(p => (
-              <li key={p.id} className="text-neutral-400 text-xs">
-                <code className="text-neutral-300">{p.prefix}…</code>
-                {p.label && <span className="ml-2">— {p.label}</span>}
-                <span className="ml-2 text-neutral-600">
-                  · created {new Date(p.created_at).toLocaleDateString()}
+              <li key={p.id} className="flex items-center justify-between text-xs">
+                <span className="text-neutral-400">
+                  <code className="text-neutral-300">{p.prefix}…</code>
+                  {p.label && <span className="ml-2">— {p.label}</span>}
+                  <span className="ml-2 text-neutral-600">
+                    · created {new Date(p.created_at).toLocaleDateString()}
+                  </span>
                 </span>
+                <button
+                  onClick={async () => {
+                    if (!confirm(`Revoke this token? It will stop working in Claude Code immediately.`)) return;
+                    await fetch(`/api/pat/${p.id}`, { method: "DELETE" });
+                    const list = await fetch("/api/pat").then(r => r.json());
+                    setPats(list.pats ?? []);
+                  }}
+                  className="text-neutral-500 hover:text-red-400 ml-3"
+                >
+                  Revoke
+                </button>
               </li>
             ))}
           </ul>

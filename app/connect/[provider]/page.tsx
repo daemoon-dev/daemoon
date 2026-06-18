@@ -54,6 +54,16 @@ const INFO: Record<string, ProviderUiInfo> = {
     ),
     helpUrl: "https://github.com/settings/personal-access-tokens/new",
   },
+  gcp: {
+    id: "gcp",
+    label: "Google Cloud",
+    instruction: (
+      <>
+        GCP Console → IAM & Admin → Service Accounts → <b>Create</b> (or pick existing) → Keys 탭 → <b>Add Key › Create new key › JSON</b> → JSON 파일 download → 내용 전체 붙여넣기.
+      </>
+    ),
+    helpUrl: "https://console.cloud.google.com/iam-admin/serviceaccounts",
+  },
 };
 
 export default function ConnectPatPage({ params }: { params: Promise<{ provider: string }> }) {
