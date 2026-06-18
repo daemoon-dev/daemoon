@@ -76,8 +76,8 @@ export function InstallMcp() {
     <section className="mb-10">
       <h2 className="text-xl font-semibold mb-2">Install in Claude Code</h2>
       <p className="text-sm text-neutral-400 mb-4">
-        Generate a token, paste the snippet into Claude Code, and the agent
-        gets every connected provider above.
+        Generate a token. Copy the snippet. Paste it into Claude Code.
+        Done — the agent gets every connected provider above.
       </p>
 
       {!rawToken ? (
@@ -89,33 +89,37 @@ export function InstallMcp() {
           {busy ? "Generating…" : pats.length > 0 ? "Generate new token" : "Generate token"}
         </button>
       ) : (
-        <div className="mb-3 p-3 rounded-md border border-amber-700 bg-amber-950/40 text-sm">
-          <div className="text-amber-300 mb-1 font-medium">
-            New token (shown once — copy it now):
+        <>
+          <div className="mb-3 text-xs text-amber-300">
+            ✓ Token created. The snippet below already includes it. Copy & paste this whole block:
           </div>
-          <code className="break-all text-amber-100">{rawToken}</code>
-        </div>
+          <div className="relative">
+            <pre className="p-4 rounded-md bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 overflow-x-auto whitespace-pre">
+{config}
+            </pre>
+            <button
+              onClick={copyConfig}
+              className="absolute top-2 right-2 px-3 py-1.5 rounded-md bg-white text-neutral-900 text-xs font-medium hover:bg-neutral-200"
+            >
+              {copied ? "✓ copied" : "Copy config"}
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-neutral-500">
+            Paste into <code className="text-neutral-400">~/.claude.json</code> under the top-level{" "}
+            <code className="text-neutral-400">mcpServers</code> key, then restart Claude Code.
+          </p>
+          <details className="mt-3 text-xs">
+            <summary className="cursor-pointer text-neutral-600 hover:text-neutral-400">
+              Show raw token (won't be visible again)
+            </summary>
+            <code className="block mt-2 p-2 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 break-all">
+              {rawToken}
+            </code>
+          </details>
+        </>
       )}
 
       {err && <div className="mt-3 text-sm text-red-400">{err}</div>}
-
-      <div className="mt-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-neutral-400">
-            Add this to <code className="text-neutral-300">~/.claude.json</code> →{" "}
-            <code className="text-neutral-300">mcpServers</code>:
-          </span>
-          <button
-            onClick={copyConfig}
-            className="text-xs text-neutral-400 hover:text-neutral-100"
-          >
-            {copied ? "✓ copied" : "Copy"}
-          </button>
-        </div>
-        <pre className="p-3 rounded-md bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 overflow-x-auto whitespace-pre">
-{config}
-        </pre>
-      </div>
 
       {pats.length > 0 && (
         <details className="mt-4 text-sm">
