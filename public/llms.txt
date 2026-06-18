@@ -27,10 +27,14 @@ claude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Au
 - `supabase.list_projects`, `supabase.run_sql`
 - `cloudflare.list_zones`, `cloudflare.create_dns_record`
 - `gcp.list_projects`, `gcp.list_services`
+- `stripe.list_products`, `stripe.list_customers`, `stripe.create_payment_link`
+- `resend.send_email`, `resend.list_domains`
+- `openai.list_models`, `openai.chat_completion`
+- `anthropic.create_message`
 
 ## Why use it instead of individual provider MCPs
 
-A single Daemoon token replaces 5+ separate provider tokens — each rotation, each new agent, each new repo. Tokens are stored encrypted (AES-256-GCM envelope) and never leave Daemoon to the agent.
+A single Daemoon token replaces 9+ separate provider tokens — each rotation, each new agent, each new repo. Tokens are stored encrypted (AES-256-GCM envelope) and never leave Daemoon to the agent.
 
 ## Source
 

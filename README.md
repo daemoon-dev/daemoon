@@ -45,8 +45,12 @@ Claude runs the install. Done.
 | Supabase     | OAuth + PAT   | `supabase.list_projects`, `supabase.run_sql`     |
 | Cloudflare   | PAT           | `cloudflare.list_zones`, `cloudflare.create_dns_record` |
 | Google Cloud | Service Account JSON | `gcp.list_projects`, `gcp.list_services`   |
+| Stripe       | PAT (Secret key) | `stripe.list_products`, `stripe.list_customers`, `stripe.create_payment_link` |
+| Resend       | PAT           | `resend.send_email`, `resend.list_domains`       |
+| OpenAI       | PAT           | `openai.list_models`, `openai.chat_completion`   |
+| Anthropic    | PAT           | `anthropic.create_message`                       |
 
-More providers (Stripe · Resend · Linear · …) on the roadmap. PRs welcome.
+More providers (Linear · Sentry · PostHog · Neon · Upstash · …) on the roadmap. PRs welcome.
 
 ## How it's secure
 
