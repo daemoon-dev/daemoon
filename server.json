@@ -1,10 +1,10 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
-  "name": "dev.daemoon/gateway",
+  "name": "io.github.daemoon-dev/daemoon",
   "description": "AI dev infra gateway — one PAT gives Claude Code / Cursor unified access to Vercel, GitHub, Cloudflare, Supabase, GCP.",
   "version": "0.9.4",
   "repository": {
-    "url": "https://github.com/jaylee7777/daemoon",
+    "url": "https://github.com/daemoon-dev/daemoon",
     "source": "github"
   },
   "websiteUrl": "https://daemoon.dev",

@@ -5,7 +5,7 @@
   "version": "0.9.4",
   "vendor": "Daemoon",
   "homepage": "https://daemoon.dev",
-  "repository": "https://github.com/jaylee7777/daemoon",
+  "repository": "https://github.com/daemoon-dev/daemoon",
   "license": "MIT",
   "endpoint": "https://daemoon.dev/api/mcp",
   "transport": "http",

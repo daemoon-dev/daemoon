@@ -59,7 +59,7 @@ More providers (Stripe · Resend · Linear · …) on the roadmap. PRs welcome.
 Daemoon is open-source. Clone, set env vars, deploy to your own Vercel:
 
 ```bash
-git clone https://github.com/jaylee7777/daemoon
+git clone https://github.com/daemoon-dev/daemoon
 cd daemoon
 cp .env.local.example .env.local   # add your Supabase + provider OAuth creds
 npm install
