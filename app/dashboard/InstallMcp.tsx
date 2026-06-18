@@ -54,7 +54,7 @@ export function InstallMcp() {
   const chatMsg = `Install the Daemoon MCP server for me by running:\nclaude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer ${rawToken || "dmn_YOUR_TOKEN"}"`;
 
   async function copyCli() {
-    await navigator.clipboard.writeText(cliCmd);
+    await navigator.clipboard.writeText(chatMsg);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
