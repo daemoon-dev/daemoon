@@ -18,7 +18,7 @@ interface PatRow {
   last_used_at: string | null;
 }
 
-type Agent = "claude-code" | "cursor" | "cline" | "continue" | "windsurf" | "manual";
+type Agent = "claude-code" | "cursor";
 
 function buildSnippet(agent: Agent, token: string): { caption: string; body: string } {
   const t = token || "dmn_YOUR_TOKEN";
@@ -33,26 +33,6 @@ function buildSnippet(agent: Agent, token: string): { caption: string; body: str
       return {
         caption: "Cursor → Settings → MCP → Add new server. Paste this JSON:",
         body: JSON.stringify({ daemoon: { url, headers: { Authorization: `Bearer ${t}` } } }, null, 2),
-      };
-    case "cline":
-      return {
-        caption: "Cline → MCP Servers → Edit MCP Settings. Add to mcpServers:",
-        body: JSON.stringify({ mcpServers: { daemoon: { url, headers: { Authorization: `Bearer ${t}` } } } }, null, 2),
-      };
-    case "continue":
-      return {
-        caption: "Continue → ~/.continue/config.yaml → mcpServers:",
-        body: `mcpServers:\n  - name: daemoon\n    url: ${url}\n    headers:\n      Authorization: Bearer ${t}`,
-      };
-    case "windsurf":
-      return {
-        caption: "Windsurf → Settings → MCP → Add. Paste this JSON:",
-        body: JSON.stringify({ mcpServers: { daemoon: { serverUrl: url, headers: { Authorization: `Bearer ${t}` } } } }, null, 2),
-      };
-    case "manual":
-      return {
-        caption: "Any MCP-compatible client. Streamable HTTP endpoint:",
-        body: `URL:    ${url}\nHeader: Authorization: Bearer ${t}`,
       };
   }
 }
@@ -117,20 +97,20 @@ export function InstallMcp() {
         </button>
       ) : (
         <>
-          <div className="flex items-center gap-2 mb-3">
-            <label className="text-sm text-neutral-400">My agent:</label>
-            <select
-              value={agent}
-              onChange={e => setAgent(e.target.value as Agent)}
-              className="px-3 py-1.5 rounded-md border border-neutral-800 bg-neutral-900 text-neutral-100 text-sm focus:outline-none focus:border-neutral-600"
-            >
-              <option value="claude-code">Claude Code</option>
-              <option value="cursor">Cursor</option>
-              <option value="cline">Cline</option>
-              <option value="continue">Continue</option>
-              <option value="windsurf">Windsurf</option>
-              <option value="manual">Other / Manual</option>
-            </select>
+          <div className="flex gap-2 mb-3">
+            {(["claude-code", "cursor"] as Agent[]).map(a => (
+              <button
+                key={a}
+                onClick={() => setAgent(a)}
+                className={`px-3 py-1.5 rounded-md text-sm border transition ${
+                  agent === a
+                    ? "bg-white text-neutral-900 border-white"
+                    : "bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-neutral-500"
+                }`}
+              >
+                {a === "claude-code" ? "Claude Code" : "Cursor"}
+              </button>
+            ))}
           </div>
 
           <div className="mb-2 text-sm text-neutral-300">{snippet.caption}</div>
