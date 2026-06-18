@@ -64,6 +64,46 @@ const INFO: Record<string, ProviderUiInfo> = {
     ),
     helpUrl: "https://console.cloud.google.com/iam-admin/serviceaccounts",
   },
+  stripe: {
+    id: "stripe",
+    label: "Stripe",
+    instruction: (
+      <>
+        Stripe Dashboard → Developers → API keys → reveal/copy your <b>Secret key</b> (<code>sk_test_…</code> for test mode, <code>sk_live_…</code> for live). Paste below.
+      </>
+    ),
+    helpUrl: "https://dashboard.stripe.com/apikeys",
+  },
+  resend: {
+    id: "resend",
+    label: "Resend",
+    instruction: (
+      <>
+        Resend → API Keys → <b>Create API Key</b> → copy the <code>re_…</code> token.
+      </>
+    ),
+    helpUrl: "https://resend.com/api-keys",
+  },
+  openai: {
+    id: "openai",
+    label: "OpenAI",
+    instruction: (
+      <>
+        OpenAI Platform → API Keys → <b>Create new secret key</b> → copy <code>sk-…</code>.
+      </>
+    ),
+    helpUrl: "https://platform.openai.com/api-keys",
+  },
+  anthropic: {
+    id: "anthropic",
+    label: "Anthropic",
+    instruction: (
+      <>
+        Anthropic Console → API Keys → <b>Create Key</b> → copy <code>sk-ant-…</code>.
+      </>
+    ),
+    helpUrl: "https://console.anthropic.com/settings/keys",
+  },
 };
 
 export default function ConnectPatPage({ params }: { params: Promise<{ provider: string }> }) {

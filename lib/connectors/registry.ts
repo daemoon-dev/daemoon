@@ -8,6 +8,10 @@ import { githubConnector } from "./github";
 import { cloudflareConnector } from "./cloudflare";
 import { supabaseConnector } from "./supabase";
 import { gcpConnector } from "./gcp";
+import { stripeConnector } from "./stripe";
+import { resendConnector } from "./resend";
+import { openaiConnector } from "./openai";
+import { anthropicConnector } from "./anthropic";
 
 export const CONNECTORS: Record<string, Connector> = {
   [vercelConnector.id]: vercelConnector,
@@ -15,6 +19,10 @@ export const CONNECTORS: Record<string, Connector> = {
   [cloudflareConnector.id]: cloudflareConnector,
   [supabaseConnector.id]: supabaseConnector,
   [gcpConnector.id]: gcpConnector,
+  [stripeConnector.id]: stripeConnector,
+  [resendConnector.id]: resendConnector,
+  [openaiConnector.id]: openaiConnector,
+  [anthropicConnector.id]: anthropicConnector,
 };
 
 export function getConnector(id: string): Connector {
