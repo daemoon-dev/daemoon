@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "dev.daemoon/gateway",
+  "description": "AI dev infra gateway — one PAT gives Claude Code / Cursor unified access to Vercel, GitHub, Cloudflare, Supabase, GCP.",
+  "version": "0.9.4",
+  "repository": {
+    "url": "https://github.com/jaylee7777/daemoon",
+    "source": "github"
+  },
+  "websiteUrl": "https://daemoon.dev",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://daemoon.dev/api/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Daemoon PAT — generate one at https://daemoon.dev/dashboard. Format: Bearer dmn_...",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Daemoon
 
-## Getting Started
+**One login. Every infrastructure. Built for AI coding agents.**
 
-First, run the development server:
+[daemoon.dev](https://daemoon.dev) · MCP server · Vercel · GitHub · Cloudflare · Supabase · GCP
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+Daemoon is the simplest way to give your AI coding agent (Claude Code, Cursor, etc.) access to all your dev infrastructure. Connect each provider **once** in your browser, then any agent gets unified, secure tool access via a single MCP token.
+
+## Why
+
+You're prototyping with Claude Code. The agent wants to deploy a Vercel project, create a Supabase table, push a GitHub branch. Today you paste five different tokens into five different config files — and every new agent / repo / teammate starts over.
+
+Daemoon ends that. One sign-in connects everything. One token wires the agent.
+
+```
+[You]                                    [Daemoon]                   [Providers]
+  │                                          │                            │
+  ├── Sign in once (Google) ─────────────────▶                            │
+  ├── Connect Vercel · GitHub · CF · Supabase ▶─── OAuth · PAT ───────────▶
+  ├── Generate MCP token ────────────────────▶                            │
+  │                                          │                            │
+  ▼                                          ▼                            ▼
+ Claude Code / Cursor / any MCP client ⇄ /api/mcp ⇄ vault ⇄ live provider APIs
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Generate your token at [daemoon.dev/dashboard](https://daemoon.dev/dashboard), then paste this into your Claude Code chat:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+Install the Daemoon MCP server for me by running:
+claude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer dmn_..."
+```
 
-## Learn More
+Claude runs the install. Done.
 
-To learn more about Next.js, take a look at the following resources:
+## Connected providers
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Provider     | Auth          | Sample tools                                   |
+|--------------|---------------|------------------------------------------------|
+| Vercel       | OAuth (1-click) | `vercel.list_projects`, `vercel.create_deployment` |
+| GitHub       | OAuth (1-click) | `github.list_repos`, `github.create_repo`         |
+| Supabase     | OAuth + PAT   | `supabase.list_projects`, `supabase.run_sql`     |
+| Cloudflare   | PAT           | `cloudflare.list_zones`, `cloudflare.create_dns_record` |
+| Google Cloud | Service Account JSON | `gcp.list_projects`, `gcp.list_services`   |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+More providers (Stripe · Resend · Linear · …) on the roadmap. PRs welcome.
 
-## Deploy on Vercel
+## How it's secure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Envelope encryption** — every provider token is wrapped with a per-token DEK, then by a master key. AES-256-GCM end to end.
+- **No raw secrets in your repo, no env vars to leak.** Tokens live in the Daemoon vault; the agent never sees them, only the responses.
+- **Revoke any token in one click.** Per-provider disconnect, per-agent PAT revoke.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Self-host
+
+Daemoon is open-source. Clone, set env vars, deploy to your own Vercel:
+
+```bash
+git clone https://github.com/jaylee7777/daemoon
+cd daemoon
+cp .env.local.example .env.local   # add your Supabase + provider OAuth creds
+npm install
+npm run dev
+```
+
+Schema in [`sql/0001_init.sql`](sql/0001_init.sql).
+
+## Architecture
+
+- **Next.js 15** App Router on Vercel (`icn1` region).
+- **Supabase** for auth (Google + magic link) + Postgres vault.
+- **MCP HTTP transport** at `/api/mcp` — JSON-RPC `tools/list` + `tools/call`.
+- **Connector interface** in [`lib/connectors/types.ts`](lib/connectors/types.ts): every provider implements OAuth / PAT validation + a list of tool defs. Adding a provider is one file.
+
+## Roadmap
+
+- More connectors: Stripe, Resend, Linear, Notion, Plausible
+- 1-click GitHub OAuth verified app (currently in Google Cloud "Testing" mode)
+- Service Account JSON → OAuth for GCP (when verified)
+- npm shim `daemoon-mcp` for stdio MCP clients
+
+## License
+
+MIT. See [LICENSE](LICENSE).
