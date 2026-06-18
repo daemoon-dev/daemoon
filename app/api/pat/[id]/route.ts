@@ -1,15 +1,7 @@
 /* DELETE /api/pat/<id> — revoke a PAT (owner only). */
 import { NextRequest, NextResponse } from "next/server";
 import { requireUserId } from "@/lib/auth";
-import { createClient } from "@supabase/supabase-js";
-
-function service() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } },
-  );
-}
+import { getServiceClient } from "@/lib/supabase/service";
 
 export async function DELETE(
   _req: NextRequest,
@@ -18,7 +10,7 @@ export async function DELETE(
   try {
     const userId = await requireUserId();
     const { id } = await context.params;
-    const { error } = await service()
+    const { error } = await getServiceClient()
       .from("daemoon_pats")
       .delete()
       .eq("id", id)

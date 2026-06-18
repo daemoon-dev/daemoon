@@ -125,11 +125,21 @@ export const githubConnector: Connector = {
       body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code, redirect_uri: redirectUri }),
     });
     if (!res.ok) throw new Error(`GitHub OAuth exchange failed: ${res.status}`);
-    const data = (await res.json()) as { access_token: string; scope: string; token_type: string };
-    if (!data.access_token) throw new Error(`GitHub OAuth empty token: ${JSON.stringify(data)}`);
+    // GitHub returns 200 OK with an `error` body on bad/expired codes.
+    const data = (await res.json()) as {
+      access_token?: string;
+      scope?: string;
+      token_type?: string;
+      error?: string;
+      error_description?: string;
+    };
+    if (data.error) {
+      throw new Error(`GitHub OAuth ${data.error}: ${data.error_description ?? "no detail"}`);
+    }
+    if (!data.access_token) throw new Error("GitHub OAuth returned no access_token");
     // user info
     const user = await gh<{ id: number; login: string }>("/user", data.access_token);
-    return { token: data.access_token, providerUserId: String(user.id), meta: { login: user.login, scopes: data.scope } };
+    return { token: data.access_token, providerUserId: String(user.id), meta: { login: user.login, scopes: data.scope ?? "" } };
   },
 
   tools: [listRepos, createRepo],

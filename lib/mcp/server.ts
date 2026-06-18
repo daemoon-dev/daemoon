@@ -15,6 +15,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import pkg from "../../package.json" with { type: "json" };
 import { listConnectors, getConnector } from "../connectors/registry";
 import { loadToken } from "../vault/store";
 import type { ToolContext } from "../connectors/types";
@@ -26,7 +27,7 @@ interface DaemoonMcpOptions {
 
 export function createDaemoonMcpServer(opts: DaemoonMcpOptions): Server {
   const server = new Server(
-    { name: "daemoon", version: "0.1.0" },
+    { name: "daemoon", version: pkg.version },
     { capabilities: { tools: {} } },
   );
 

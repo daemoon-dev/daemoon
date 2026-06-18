@@ -105,24 +105,20 @@ export const anthropicConnector: Connector = {
   oauthSupported: false,
 
   async validatePat(pat: string) {
+    // Prefer the lightweight /models endpoint — no token consumption, doesn't
+    // depend on a specific model being available to the account.
     try {
-      const res = await fetch(new URL("messages", API + "/"), {
-        method: "POST",
+      const res = await fetch(new URL("models", API + "/"), {
+        method: "GET",
         headers: {
           "x-api-key": pat,
           "anthropic-version": ANTHROPIC_VERSION,
-          "Content-Type": "application/json",
-          "User-Agent": "Daemoon/0.1",
+          "User-Agent": "Daemoon/1.1 (+https://daemoon.dev)",
         },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5",
-          max_tokens: 1,
-          messages: [{ role: "user", content: "hi" }],
-        }),
       });
       if (!res.ok) return { ok: false as const, reason: `Anthropic API ${res.status}` };
-      const json = (await res.json()) as { model?: string };
-      return { ok: true as const, meta: { pingModel: json.model ?? null } };
+      const json = (await res.json()) as { data?: Array<{ id: string }> };
+      return { ok: true as const, meta: { modelCount: json.data?.length ?? null } };
     } catch (e) {
       return { ok: false as const, reason: e instanceof Error ? e.message : "unknown" };
     }

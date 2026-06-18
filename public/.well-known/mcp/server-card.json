@@ -1,8 +1,8 @@
 {
   "name": "daemoon",
   "displayName": "Daemoon",
-  "description": "AI dev infra gateway. One login gives any MCP-aware agent unified access to Vercel, GitHub, Cloudflare, Supabase, and Google Cloud.",
-  "version": "1.1.0",
+  "description": "AI dev infra gateway. One login gives any MCP-aware agent unified access to Vercel, GitHub, Cloudflare, Supabase, Google Cloud, Stripe, Resend, OpenAI, and Anthropic.",
+  "version": "1.2.0",
   "vendor": "Daemoon",
   "homepage": "https://daemoon.dev",
   "repository": "https://github.com/daemoon-dev/daemoon",

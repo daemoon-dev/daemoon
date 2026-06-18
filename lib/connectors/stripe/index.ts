@@ -19,7 +19,9 @@ async function st<T>(path: string, token: string, init: RequestInit = {}): Promi
     ...init,
     headers: {
       Authorization: `Bearer ${token}`,
-      "User-Agent": "Daemoon/0.1",
+      "User-Agent": "Daemoon/1.1 (+https://daemoon.dev)",
+      // Pin the API version so contract changes don't silently break us.
+      "Stripe-Version": "2024-12-18.acacia",
       ...(init.headers ?? {}),
     },
   });

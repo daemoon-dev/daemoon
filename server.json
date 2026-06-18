@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jaylee7777/daemoon",
   "description": "One PAT, any MCP agent: Vercel, GitHub, Cloudflare, Supabase, GCP — unified dev infra gateway.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "repository": {
     "url": "https://github.com/daemoon-dev/daemoon",
     "source": "github"

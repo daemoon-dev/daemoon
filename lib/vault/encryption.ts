@@ -84,7 +84,8 @@ export function decryptToken(enc: EncryptedToken): string {
   const { key: master, version } = getMasterKey();
   if (enc.keyVersion !== version) {
     // 회전 미완료 — 다른 버전 키 로딩 path 필요. MVP 에선 fail-fast.
-    throw new Error(`token key version mismatch (have v${version}, need v${enc.keyVersion})`);
+    // Don't leak version numbers in the error message (info leak).
+    throw new Error("vault key version mismatch");
   }
   const dek = aesDecrypt(
     master,

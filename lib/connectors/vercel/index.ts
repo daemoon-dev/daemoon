@@ -11,13 +11,12 @@
  * MVP 도구 (3개):
  *   1) vercel.list_projects()
  *   2) vercel.create_project({ name, framework })
- *   3) vercel.deploy({ projectId, gitSource })   // GitHub repo 의 main 브랜치 자동 deploy
- *
- * 추가 도구는 같은 패턴으로 추가 (open core 확장 가능).
+ *   3) vercel.create_deployment({ projectId, gitRepoId, teamId? })
  */
 import type { Connector, OAuthExchanged, OAuthStart, ToolContext, ToolDef } from "../types";
 
 const API = "https://api.vercel.com";
+const UA = "Daemoon/1.1 (+https://daemoon.dev)";
 
 interface VercelFetchOpts {
   method?: string;
@@ -39,7 +38,7 @@ async function vfetch<T>(opts: VercelFetchOpts): Promise<T> {
     headers: {
       Authorization: `Bearer ${opts.token}`,
       "Content-Type": "application/json",
-      "User-Agent": "Daemoon/0.1 (+https://daemoon.ai)",
+      "User-Agent": UA,
     },
     body: opts.body ? JSON.stringify(opts.body) : undefined,
   });
@@ -55,42 +54,57 @@ function requireToken(ctx: ToolContext): string {
   return ctx.token;
 }
 
-const listProjects: ToolDef<{ limit?: number }, { projects: Array<{ id: string; name: string; framework: string | null }> }> = {
+const listProjects: ToolDef<
+  { limit?: number; teamId?: string },
+  { projects: Array<{ id: string; name: string; framework: string | null }> }
+> = {
   name: "vercel.list_projects",
-  description: "Vercel 의 내 프로젝트 목록 (최대 20개).",
+  description: "Vercel 의 내 프로젝트 목록 (최대 100). teamId 주면 해당 team 의 프로젝트.",
   inputSchema: {
     type: "object",
-    properties: { limit: { type: "number", minimum: 1, maximum: 100, default: 20 } },
+    properties: {
+      limit: { type: "number", minimum: 1, maximum: 100, default: 20 },
+      teamId: { type: "string", description: "Vercel team id (team_…). 생략하면 personal." },
+    },
     additionalProperties: false,
   },
-  async handler({ limit = 20 }, ctx) {
+  async handler({ limit = 20, teamId }, ctx) {
     const token = requireToken(ctx);
     const data = await vfetch<{ projects: Array<{ id: string; name: string; framework: string | null }> }>({
       path: "/v9/projects",
-      query: { limit: String(limit) },
+      query: { limit: String(limit), teamId },
       token,
     });
     return { projects: data.projects.map(p => ({ id: p.id, name: p.name, framework: p.framework })) };
   },
 };
 
-const createProject: ToolDef<{ name: string; framework?: string }, { id: string; name: string }> = {
+const createProject: ToolDef<
+  { name: string; framework?: string; teamId?: string },
+  { id: string; name: string }
+> = {
   name: "vercel.create_project",
   description: "Vercel 신규 프로젝트 생성. name 은 url-safe 소문자.",
   inputSchema: {
     type: "object",
     properties: {
       name: { type: "string", minLength: 1, maxLength: 64, pattern: "^[a-z0-9][a-z0-9-]*[a-z0-9]$" },
-      framework: { type: "string", enum: ["nextjs", "vite", "remix", "astro", "svelte", "nuxt"], default: "nextjs" },
+      framework: {
+        type: "string",
+        enum: ["nextjs", "vite", "remix", "astro", "sveltekit", "nuxtjs"],
+        default: "nextjs",
+      },
+      teamId: { type: "string" },
     },
     required: ["name"],
     additionalProperties: false,
   },
-  async handler({ name, framework = "nextjs" }, ctx) {
+  async handler({ name, framework = "nextjs", teamId }, ctx) {
     const token = requireToken(ctx);
     const data = await vfetch<{ id: string; name: string }>({
       method: "POST",
       path: "/v10/projects",
+      query: { teamId },
       token,
       body: { name, framework },
     });
@@ -98,30 +112,42 @@ const createProject: ToolDef<{ name: string; framework?: string }, { id: string;
   },
 };
 
-const deploy: ToolDef<{ projectId: string; gitRepoId: string; ref?: string }, { id: string; url: string; readyState: string }> = {
-  name: "vercel.deploy",
-  description: "GitHub repo 의 특정 ref (default 'main') 를 Vercel 프로젝트에 배포 trigger.",
+const createDeployment: ToolDef<
+  { projectId: string; gitRepoId: string | number; ref?: string; teamId?: string },
+  { id: string; url: string; readyState: string }
+> = {
+  name: "vercel.create_deployment",
+  description: "GitHub repo 의 특정 ref (default 'main') 를 Vercel 프로젝트에 production 배포 trigger.",
   inputSchema: {
     type: "object",
     properties: {
-      projectId: { type: "string" },
-      gitRepoId: { type: "string", description: "GitHub repo numeric id" },
+      projectId: { type: "string", minLength: 1 },
+      gitRepoId: {
+        oneOf: [{ type: "number" }, { type: "string", pattern: "^[0-9]+$" }],
+        description: "GitHub repo numeric id (number or string-of-digits).",
+      },
       ref: { type: "string", default: "main" },
+      teamId: { type: "string" },
     },
     required: ["projectId", "gitRepoId"],
     additionalProperties: false,
   },
-  async handler({ projectId, gitRepoId, ref = "main" }, ctx) {
+  async handler({ projectId, gitRepoId, ref = "main", teamId }, ctx) {
     const token = requireToken(ctx);
+    const repoIdNum = typeof gitRepoId === "number" ? gitRepoId : Number(gitRepoId);
+    if (!Number.isFinite(repoIdNum) || repoIdNum <= 0) {
+      throw new Error("gitRepoId must be a positive integer.");
+    }
     const data = await vfetch<{ id: string; url: string; readyState: string }>({
       method: "POST",
       path: "/v13/deployments",
+      query: { teamId },
       token,
       body: {
         name: projectId,
         project: projectId,
         target: "production",
-        gitSource: { type: "github", repoId: gitRepoId, ref },
+        gitSource: { type: "github", repoId: repoIdNum, ref },
       },
     });
     return { id: data.id, url: data.url, readyState: data.readyState };
@@ -137,7 +163,7 @@ export const vercelConnector: Connector = {
   async validatePat(pat: string) {
     try {
       const res = await fetch(`${API}/v2/user`, {
-        headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemoon/0.1" },
+        headers: { Authorization: `Bearer ${pat}`, "User-Agent": UA },
       });
       if (!res.ok) return { ok: false as const, reason: `Vercel API ${res.status}` };
       const user = (await res.json()) as { user?: { id?: string; username?: string; email?: string } };
@@ -190,5 +216,5 @@ export const vercelConnector: Connector = {
     };
   },
 
-  tools: [listProjects, createProject, deploy],
+  tools: [listProjects, createProject, createDeployment],
 };

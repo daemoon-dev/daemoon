@@ -7,7 +7,7 @@ export async function GET(): Promise<NextResponse> {
     await requireUserId();
     const sb = await getServerSupabase();
     const { data, error } = await sb
-      .from("daemoon_audit")
+      .from("daemoon_my_audit")
       .select("id, provider, tool, ok, created_at")
       .order("created_at", { ascending: false })
       .limit(5);

@@ -7,7 +7,7 @@
  *
  * MVP 도구:
  *   1) cloudflare.list_zones()
- *   2) cloudflare.add_dns_record({ zoneId, type, name, content, proxied? })
+ *   2) cloudflare.create_dns_record({ zoneId, type, name, content, proxied? })
  *   3) cloudflare.register_domain({ name, years })  // Cloudflare Registrar API
  *
  * Phase 1 에선 domain register 는 *Cloudflare 가 paid 사용자만 허용* (\$15/년 카드 등록 필요)
@@ -58,11 +58,11 @@ const listZones: ToolDef<{ limit?: number }, { zones: Array<{ id: string; name: 
   },
 };
 
-const addDnsRecord: ToolDef<
+const createDnsRecord: ToolDef<
   { zoneId: string; type: string; name: string; content: string; proxied?: boolean; ttl?: number },
   { id: string; name: string; content: string }
 > = {
-  name: "cloudflare.add_dns_record",
+  name: "cloudflare.create_dns_record",
   description: "DNS 레코드 추가 (A/AAAA/CNAME/TXT 등).",
   inputSchema: {
     type: "object",
@@ -107,5 +107,5 @@ export const cloudflareConnector: Connector = {
     }
   },
 
-  tools: [listZones, addDnsRecord],
+  tools: [listZones, createDnsRecord],
 };

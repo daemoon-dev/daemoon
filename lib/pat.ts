@@ -5,15 +5,7 @@
  *   - lookup: 들어온 Bearer 의 sha256 으로 daemoon_pats 조회 → user_id.
  */
 import { createHash, randomBytes } from "crypto";
-import { createClient } from "@supabase/supabase-js";
-
-function service() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } },
-  );
-}
+import { getServiceClient } from "@/lib/supabase/service";
 
 function hash(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");
@@ -25,8 +17,7 @@ export async function createPat(
 ): Promise<{ raw: string; prefix: string }> {
   const raw = `dmn_${randomBytes(24).toString("base64url")}`;
   const prefix = raw.slice(0, 12);
-  const sb = service();
-  const { error } = await sb.from("daemoon_pats").insert({
+  const { error } = await getServiceClient().from("daemoon_pats").insert({
     user_id: userId,
     label: label ?? null,
     token_hash: hash(raw),
@@ -38,14 +29,21 @@ export async function createPat(
 
 export async function lookupPat(raw: string): Promise<string | null> {
   if (!raw.startsWith("dmn_")) return null;
-  const sb = service();
+  const sb = getServiceClient();
   const { data, error } = await sb
     .from("daemoon_pats")
     .select("user_id, id")
     .eq("token_hash", hash(raw))
     .maybeSingle();
-  if (error || !data) return null;
-  // best-effort last_used_at touch (non-blocking)
-  sb.from("daemoon_pats").update({ last_used_at: new Date().toISOString() }).eq("id", data.id).then(() => {});
+  if (error) throw new Error(`pat lookup failed: ${error.message}`);
+  if (!data) return null;
+  // best-effort last_used_at touch — never block auth on this
+  sb.from("daemoon_pats")
+    .update({ last_used_at: new Date().toISOString() })
+    .eq("id", data.id)
+    .then(
+      () => {},
+      () => {},
+    );
   return data.user_id as string;
 }

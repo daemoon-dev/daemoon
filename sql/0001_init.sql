@@ -30,7 +30,6 @@ create table if not exists public.daemoon_audit (
   user_id       uuid not null references auth.users(id) on delete cascade,
   provider      text not null,
   tool          text not null,
-  args_summary  jsonb,                 -- 민감 정보 제외하고 요약 (token 절대 X)
   ok            boolean not null,
   error         text,
   duration_ms   int,
