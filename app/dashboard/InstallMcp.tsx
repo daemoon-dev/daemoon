@@ -51,23 +51,16 @@ export function InstallMcp() {
     setBusy(false);
   }
 
-  const config = JSON.stringify(
-    {
-      mcpServers: {
-        daemoon: {
-          url: "https://daemoon.dev/api/mcp",
-          headers: {
-            Authorization: `Bearer ${rawToken || "dmn_YOUR_TOKEN_HERE"}`,
-          },
-        },
-      },
-    },
-    null,
-    2,
-  );
+  const cliCmd = `claude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer ${rawToken || "dmn_YOUR_TOKEN"}"`;
 
-  async function copyConfig() {
-    await navigator.clipboard.writeText(config);
+  async function copyToken() {
+    if (!rawToken) return;
+    await navigator.clipboard.writeText(rawToken);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+  async function copyCli() {
+    await navigator.clipboard.writeText(cliCmd);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -90,32 +83,36 @@ export function InstallMcp() {
         </button>
       ) : (
         <>
-          <div className="mb-3 text-xs text-amber-300">
-            ✓ Token created. The snippet below already includes it. Copy & paste this whole block:
+          <div className="mb-2 text-xs text-neutral-400">Your token (save it — won't be shown again):</div>
+          <div className="relative mb-5">
+            <code className="block p-4 pr-24 rounded-md bg-neutral-900 border border-amber-700/60 text-amber-100 break-all text-sm">
+              {rawToken}
+            </code>
+            <button
+              onClick={copyToken}
+              className="absolute top-1/2 -translate-y-1/2 right-2 px-3 py-1.5 rounded-md bg-white text-neutral-900 text-xs font-medium hover:bg-neutral-200"
+            >
+              {copied ? "✓" : "Copy token"}
+            </button>
+          </div>
+
+          <div className="mb-2 text-xs text-neutral-400">
+            Install in Claude Code — paste this in your terminal:
           </div>
           <div className="relative">
-            <pre className="p-4 rounded-md bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 overflow-x-auto whitespace-pre">
-{config}
+            <pre className="p-4 pr-24 rounded-md bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 overflow-x-auto whitespace-pre-wrap break-all">
+{cliCmd}
             </pre>
             <button
-              onClick={copyConfig}
+              onClick={copyCli}
               className="absolute top-2 right-2 px-3 py-1.5 rounded-md bg-white text-neutral-900 text-xs font-medium hover:bg-neutral-200"
             >
-              {copied ? "✓ copied" : "Copy config"}
+              {copied ? "✓" : "Copy"}
             </button>
           </div>
           <p className="mt-3 text-xs text-neutral-500">
-            Paste into <code className="text-neutral-400">~/.claude.json</code> under the top-level{" "}
-            <code className="text-neutral-400">mcpServers</code> key, then restart Claude Code.
+            Or tell any AI agent: <span className="text-neutral-300">"install Daemoon MCP, my token is {rawToken.slice(0, 12)}…"</span>
           </p>
-          <details className="mt-3 text-xs">
-            <summary className="cursor-pointer text-neutral-600 hover:text-neutral-400">
-              Show raw token (won't be visible again)
-            </summary>
-            <code className="block mt-2 p-2 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 break-all">
-              {rawToken}
-            </code>
-          </details>
         </>
       )}
 
