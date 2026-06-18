@@ -73,7 +73,54 @@ const runSql: ToolDef<{ projectRef: string; query: string }, { result: unknown }
 export const supabaseConnector: Connector = {
   id: "supabase",
   label: "Supabase",
-  oauthSupported: false,
+  // v0.6 — Supabase Management OAuth 도 지원. PAT 도 fallback.
+  oauthSupported: true,
+
+  oauthStart(redirectUri, state) {
+    const clientId = process.env.SUPABASE_CLIENT_ID;
+    if (!clientId) throw new Error("SUPABASE_CLIENT_ID not configured");
+    const url = new URL("https://api.supabase.com/v1/oauth/authorize");
+    url.searchParams.set("client_id", clientId);
+    url.searchParams.set("redirect_uri", redirectUri);
+    url.searchParams.set("response_type", "code");
+    url.searchParams.set("state", state);
+    url.searchParams.set("scope", "all");
+    return { authorizeUrl: url.toString(), state };
+  },
+
+  async oauthExchange(code: string, redirectUri: string) {
+    const clientId = process.env.SUPABASE_CLIENT_ID;
+    const clientSecret = process.env.SUPABASE_CLIENT_SECRET;
+    if (!clientId || !clientSecret) throw new Error("Supabase OAuth env not configured");
+    const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+    const body = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+    });
+    const res = await fetch("https://api.supabase.com/v1/oauth/token", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basic}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+    });
+    if (!res.ok) {
+      throw new Error(`Supabase OAuth exchange failed: ${res.status} ${(await res.text()).slice(0, 200)}`);
+    }
+    const data = (await res.json()) as {
+      access_token: string;
+      refresh_token?: string;
+      expires_in?: number;
+      token_type: string;
+    };
+    return {
+      token: data.access_token,
+      refreshToken: data.refresh_token,
+      expiresIn: data.expires_in,
+    };
+  },
 
   async validatePat(pat: string) {
     try {
