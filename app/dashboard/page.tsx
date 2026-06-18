@@ -8,6 +8,8 @@ import { getServerSupabase } from "@/lib/auth";
 import { InstallMcp } from "./InstallMcp";
 import { AccountHeader } from "./AccountHeader";
 import { ConnectionRow } from "./ConnectionRow";
+import { TryItPanel } from "./TryItPanel";
+import { AuditMini } from "./AuditMini";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +36,10 @@ export default async function Dashboard() {
         <AccountHeader email={userRes.user.email ?? ""} />
 
         <InstallMcp />
+
+        <TryItPanel connectedProviders={Array.from(connected)} />
+
+        <AuditMini />
 
         <h2 className="text-xl font-semibold mb-2">Connections</h2>
         <p className="text-neutral-400 text-sm mb-4">

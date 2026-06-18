@@ -14,6 +14,33 @@ import { lookupPat } from "@/lib/pat";
 import { getConnector, listConnectors } from "@/lib/connectors/registry";
 import { loadToken } from "@/lib/vault/store";
 import type { ToolContext } from "@/lib/connectors/types";
+import { createClient } from "@supabase/supabase-js";
+
+function serviceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  );
+}
+
+function recordAudit(args: {
+  userId: string;
+  provider: string;
+  tool: string;
+  ok: boolean;
+  error?: string;
+  durationMs: number;
+}) {
+  serviceClient().from("daemoon_audit").insert({
+    user_id: args.userId,
+    provider: args.provider,
+    tool: args.tool,
+    ok: args.ok,
+    error: args.error ?? null,
+    duration_ms: args.durationMs,
+  }).then(() => {});
+}
 
 async function resolveUserId(req: NextRequest): Promise<string | null> {
   const auth = req.headers.get("authorization") || req.headers.get("Authorization");
@@ -57,8 +84,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       if (!tool) return NextResponse.json({ error: `Tool not found: ${name}` }, { status: 404 });
       const stored = await loadToken(userId, providerId);
       const ctx: ToolContext = { token: stored?.token ?? null, userId };
-      const result = await tool.handler(args, ctx);
-      return NextResponse.json({ result });
+      const t0 = Date.now();
+      try {
+        const result = await tool.handler(args, ctx);
+        recordAudit({ userId, provider: providerId, tool: name, ok: true, durationMs: Date.now() - t0 });
+        return NextResponse.json({ result });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        recordAudit({ userId, provider: providerId, tool: name, ok: false, error: msg, durationMs: Date.now() - t0 });
+        return NextResponse.json({ error: msg }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ error: "unknown method" }, { status: 400 });
