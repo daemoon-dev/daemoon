@@ -51,7 +51,7 @@ export function InstallMcp() {
     setBusy(false);
   }
 
-  const cliCmd = `claude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer ${rawToken || "dmn_YOUR_TOKEN"}"`;
+  const chatMsg = `Install the Daemoon MCP server for me by running:\nclaude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer ${rawToken || "dmn_YOUR_TOKEN"}"`;
 
   async function copyCli() {
     await navigator.clipboard.writeText(cliCmd);
@@ -78,11 +78,11 @@ export function InstallMcp() {
       ) : (
         <>
           <div className="mb-2 text-sm text-neutral-300">
-            Paste this in your terminal:
+            Paste this into your Claude Code chat:
           </div>
           <div className="relative">
             <pre className="p-4 pr-32 rounded-md bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 overflow-x-auto whitespace-pre-wrap break-all">
-{cliCmd}
+{chatMsg}
             </pre>
             <button
               onClick={copyCli}
@@ -91,7 +91,10 @@ export function InstallMcp() {
               {copied ? "✓ copied" : "Copy"}
             </button>
           </div>
-          <details className="mt-4 text-xs">
+          <p className="mt-3 text-xs text-neutral-500">
+            Claude will run the install for you — no terminal needed.
+          </p>
+          <details className="mt-3 text-xs">
             <summary className="cursor-pointer text-neutral-600 hover:text-neutral-400">
               Show raw token
             </summary>
