@@ -18,12 +18,52 @@ interface PatRow {
   last_used_at: string | null;
 }
 
+type Agent = "claude-code" | "cursor" | "cline" | "continue" | "windsurf" | "manual";
+
+function buildSnippet(agent: Agent, token: string): { caption: string; body: string } {
+  const t = token || "dmn_YOUR_TOKEN";
+  const url = "https://daemoon.dev/api/mcp";
+  switch (agent) {
+    case "claude-code":
+      return {
+        caption: "Paste this into your Claude Code chat:",
+        body: `Install the Daemoon MCP server for me by running:\nclaude mcp add --transport http daemoon ${url} --header "Authorization: Bearer ${t}"`,
+      };
+    case "cursor":
+      return {
+        caption: "Cursor → Settings → MCP → Add new server. Paste this JSON:",
+        body: JSON.stringify({ daemoon: { url, headers: { Authorization: `Bearer ${t}` } } }, null, 2),
+      };
+    case "cline":
+      return {
+        caption: "Cline → MCP Servers → Edit MCP Settings. Add to mcpServers:",
+        body: JSON.stringify({ mcpServers: { daemoon: { url, headers: { Authorization: `Bearer ${t}` } } } }, null, 2),
+      };
+    case "continue":
+      return {
+        caption: "Continue → ~/.continue/config.yaml → mcpServers:",
+        body: `mcpServers:\n  - name: daemoon\n    url: ${url}\n    headers:\n      Authorization: Bearer ${t}`,
+      };
+    case "windsurf":
+      return {
+        caption: "Windsurf → Settings → MCP → Add. Paste this JSON:",
+        body: JSON.stringify({ mcpServers: { daemoon: { serverUrl: url, headers: { Authorization: `Bearer ${t}` } } } }, null, 2),
+      };
+    case "manual":
+      return {
+        caption: "Any MCP-compatible client. Streamable HTTP endpoint:",
+        body: `URL:    ${url}\nHeader: Authorization: Bearer ${t}`,
+      };
+  }
+}
+
 export function InstallMcp() {
   const [pats, setPats] = useState<PatRow[]>([]);
   const [rawToken, setRawToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [copied, setCopied] = useState(false);
+  const [agent, setAgent] = useState<Agent>("claude-code");
 
   useEffect(() => {
     fetch("/api/pat").then(r => r.json()).then(d => setPats(d.pats ?? []));
@@ -51,10 +91,10 @@ export function InstallMcp() {
     setBusy(false);
   }
 
-  const chatMsg = `Install the Daemoon MCP server for me by running:\nclaude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer ${rawToken || "dmn_YOUR_TOKEN"}"`;
+  const snippet = buildSnippet(agent, rawToken);
 
   async function copyCli() {
-    await navigator.clipboard.writeText(chatMsg);
+    await navigator.clipboard.writeText(snippet.body);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -77,12 +117,26 @@ export function InstallMcp() {
         </button>
       ) : (
         <>
-          <div className="mb-2 text-sm text-neutral-300">
-            Paste this into your Claude Code chat:
+          <div className="flex items-center gap-2 mb-3">
+            <label className="text-sm text-neutral-400">My agent:</label>
+            <select
+              value={agent}
+              onChange={e => setAgent(e.target.value as Agent)}
+              className="px-3 py-1.5 rounded-md border border-neutral-800 bg-neutral-900 text-neutral-100 text-sm focus:outline-none focus:border-neutral-600"
+            >
+              <option value="claude-code">Claude Code</option>
+              <option value="cursor">Cursor</option>
+              <option value="cline">Cline</option>
+              <option value="continue">Continue</option>
+              <option value="windsurf">Windsurf</option>
+              <option value="manual">Other / Manual</option>
+            </select>
           </div>
+
+          <div className="mb-2 text-sm text-neutral-300">{snippet.caption}</div>
           <div className="relative">
             <pre className="p-4 pr-32 rounded-md bg-neutral-900 border border-neutral-800 text-xs text-neutral-200 overflow-x-auto whitespace-pre-wrap break-all">
-{chatMsg}
+{snippet.body}
             </pre>
             <button
               onClick={copyCli}
@@ -91,9 +145,6 @@ export function InstallMcp() {
               {copied ? "✓ copied" : "Copy"}
             </button>
           </div>
-          <p className="mt-3 text-xs text-neutral-500">
-            Claude will run the install for you — no terminal needed.
-          </p>
           <details className="mt-3 text-xs">
             <summary className="cursor-pointer text-neutral-600 hover:text-neutral-400">
               Show raw token
