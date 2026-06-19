@@ -78,6 +78,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       {
         access_token: row.pat_raw,
         token_type: "Bearer",
+        expires_in: 31536000,
         scope: "mcp",
       },
       { headers: { "cache-control": "no-store" } },

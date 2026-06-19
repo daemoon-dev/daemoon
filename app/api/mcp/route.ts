@@ -173,7 +173,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           status: 401,
           headers: {
             "www-authenticate":
-              'Bearer realm="https://daemoon.dev", resource_metadata="https://daemoon.dev/.well-known/oauth-protected-resource"',
+              'Bearer realm="https://daemoon.dev", resource_metadata="https://daemoon.dev/.well-known/oauth-protected-resource", scope="mcp"',
           },
         },
       );

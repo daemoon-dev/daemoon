@@ -12,9 +12,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const type = url.searchParams.get("type");
-  // Reject open-redirect attempts. Only allow single-slash same-origin paths.
+  // Open-redirect-safe: must start with single `/`, no `//`.
   const rawNext = url.searchParams.get("next") || "/dashboard";
-  const next = /^\/[A-Za-z0-9_\-/]*$/.test(rawNext) ? rawNext : "/dashboard";
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
 
   try {
     if (code) {

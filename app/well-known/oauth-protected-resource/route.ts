@@ -10,6 +10,7 @@ export function GET() {
       resource: "https://daemoon.dev/api/mcp",
       authorization_servers: ["https://daemoon.dev"],
       bearer_methods_supported: ["header"],
+      scopes_supported: ["mcp"],
       resource_documentation: "https://daemoon.dev/dashboard",
     },
     { headers: { "cache-control": "public, max-age=300" } },

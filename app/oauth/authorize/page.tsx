@@ -85,6 +85,7 @@ export default async function AuthorizePage({
     code_challenge: sp.code_challenge ?? null,
     code_challenge_method: sp.code_challenge_method ?? null,
     client_id: sp.client_id,
+    expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
   });
   if (codeErr) {
     return <ErrorPanel title="Authorization failed" detail={codeErr.message} />;

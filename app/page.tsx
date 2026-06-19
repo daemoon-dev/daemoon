@@ -2,8 +2,8 @@
 
 /* Daemoon home — value props + inline sign-in (single page). */
 import { createBrowserClient } from "@supabase/ssr";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function sbClient() {
   return createBrowserClient(
@@ -12,27 +12,59 @@ function sbClient() {
   );
 }
 
+function safeNext(raw: string | null): string {
+  // Open-redirect-safe: must start with single `/`, no `//`.
+  if (!raw) return "/dashboard";
+  if (!raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
 export default function Home() {
+  return (
+    <Suspense fallback={<HomeShell />}>
+      <HomeInner />
+    </Suspense>
+  );
+}
+
+function HomeShell() {
+  return (
+    <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center p-8">
+      <div className="max-w-md w-full">
+        <h1 className="text-5xl font-bold tracking-tight mb-3 text-center">Daemoon</h1>
+      </div>
+    </main>
+  );
+}
+
+function HomeInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = safeNext(searchParams.get("next"));
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    // If already signed in, jump to /dashboard.
+    // If already signed in, jump to ?next= (or /dashboard).
     const sb = sbClient();
     sb.auth.getUser().then(({ data }) => {
-      if (data.user) router.replace("/dashboard");
+      if (data.user) router.replace(next);
     });
-  }, [router]);
+  }, [router, next]);
+
+  function callbackUrl(): string {
+    const base = `${window.location.origin}/auth/callback`;
+    return next === "/dashboard" ? base : `${base}?next=${encodeURIComponent(next)}`;
+  }
 
   async function signInGoogle() {
     setErr("");
     const sb = sbClient();
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl() },
     });
     if (error) setErr(error.message);
   }
@@ -45,7 +77,7 @@ export default function Home() {
     const sb = sbClient();
     const { error } = await sb.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: callbackUrl() },
     });
     setBusy(false);
     if (error) {
