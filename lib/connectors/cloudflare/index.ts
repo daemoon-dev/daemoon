@@ -1,17 +1,17 @@
 /* Daemoon — Cloudflare connector.
  *
- * Cloudflare 는 *OAuth 미지원* — *API Token* 만 사용 (사용자 직접 만들어서 paste).
- *   1) 사용자가 dash.cloudflare.com/profile/api-tokens 가서 토큰 생성
- *   2) Daemoon 가 토큰 유효성 검증 (GET /user/tokens/verify)
- *   3) vault 저장 후 사용
+ * Cloudflare *does not support OAuth* — *API Token* only (user creates and pastes).
+ *   1) User visits dash.cloudflare.com/profile/api-tokens and creates a token
+ *   2) Daemoon validates it (GET /user/tokens/verify)
+ *   3) Stored in vault and used
  *
- * MVP 도구:
+ * MVP tools:
  *   1) cloudflare.list_zones()
  *   2) cloudflare.create_dns_record({ zoneId, type, name, content, proxied? })
  *   3) cloudflare.register_domain({ name, years })  // Cloudflare Registrar API
  *
- * Phase 1 에선 domain register 는 *Cloudflare 가 paid 사용자만 허용* (\$15/년 카드 등록 필요)
- * → 사용자 첫 결제 흐름은 dashboard 외부 link 로 처리.
+ * In Phase 1, domain registration is *only allowed for paid Cloudflare accounts*
+ * (\$15/yr card on file) → first-time payment is handled via an external dashboard link.
  */
 import type { Connector, ToolContext, ToolDef } from "../types";
 
@@ -42,7 +42,7 @@ function reqTok(ctx: ToolContext): string {
 
 const listZones: ToolDef<{ limit?: number }, { zones: Array<{ id: string; name: string; status: string }> }> = {
   name: "cloudflare.list_zones",
-  description: "Cloudflare 에 등록된 내 zone (도메인) 목록.",
+  description: "List my zones (domains) registered with Cloudflare.",
   inputSchema: {
     type: "object",
     properties: { limit: { type: "number", minimum: 1, maximum: 100, default: 50 } },
@@ -63,7 +63,7 @@ const createDnsRecord: ToolDef<
   { id: string; name: string; content: string }
 > = {
   name: "cloudflare.create_dns_record",
-  description: "DNS 레코드 추가 (A/AAAA/CNAME/TXT 등).",
+  description: "Add a DNS record (A/AAAA/CNAME/TXT etc).",
   inputSchema: {
     type: "object",
     properties: {
@@ -99,8 +99,8 @@ export const cloudflareConnector: Connector = {
         headers: { Authorization: `Bearer ${pat}`, "User-Agent": "Daemoon/0.1" },
       });
       const json = (await res.json()) as { success: boolean; result?: { status: string; id?: string } };
-      if (!res.ok || !json.success) return { ok: false as const, reason: "토큰 검증 실패 (Cloudflare API)" };
-      if (json.result?.status !== "active") return { ok: false as const, reason: `토큰 상태: ${json.result?.status}` };
+      if (!res.ok || !json.success) return { ok: false as const, reason: "Token verification failed (Cloudflare API)" };
+      if (json.result?.status !== "active") return { ok: false as const, reason: `Token status: ${json.result?.status}` };
       return { ok: true as const, meta: { tokenId: json.result?.id } };
     } catch (e) {
       return { ok: false as const, reason: e instanceof Error ? e.message : "unknown" };

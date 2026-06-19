@@ -1,9 +1,9 @@
-/* PAT 직접 입력 connector 용 — Cloudflare / Supabase 등.
+/* For connectors that take a PAT directly — Cloudflare / Supabase / etc.
  *
  *   POST /api/connect/pat/cloudflare
  *   body: { token: "abc..." }
  *
- *   → connector.validatePat() → 성공이면 vault 저장.
+ *   → connector.validatePat() → on success, store in vault.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getConnector } from "@/lib/connectors/registry";
@@ -18,7 +18,7 @@ export async function POST(
     const userId = await requireUserId();
     const { provider } = await context.params;
     const connector = getConnector(provider);
-    // v0.4 — PAT 도 OAuth-지원 connector 에 허용 (Vercel/GitHub 도 PAT 받음).
+    // v0.4 — also allow PAT input on OAuth-supported connectors (Vercel/GitHub accept PATs too).
     if (!connector.validatePat) {
       return NextResponse.json({ error: "PAT input not supported for this provider" }, { status: 400 });
     }

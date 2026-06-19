@@ -1,4 +1,4 @@
-/* OAuth callback — code → token 교환 → vault 저장 → /dashboard 리다이렉트.
+/* OAuth callback — exchange code for token → store in vault → redirect to /dashboard.
  *
  *   GET /api/oauth/vercel/callback?code=...&state=...
  */
@@ -27,7 +27,7 @@ export async function GET(
     if (!state || state !== stored) {
       return NextResponse.json({ error: "state mismatch — possible CSRF" }, { status: 400 });
     }
-    // state prefix 가 자기 userId 인지도 검사.
+    // Also verify the state's prefix is the caller's own userId.
     const [statedUserId] = state.split(".");
     if (statedUserId !== userId) {
       return NextResponse.json({ error: "user mismatch" }, { status: 403 });

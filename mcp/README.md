@@ -1,11 +1,12 @@
 # Daemoon MCP Server
 
-표준 Anthropic MCP SDK 기반 server.
-사용자 token vault 에서 token 꺼내 provider connector 로 위임.
+A standard Anthropic MCP SDK server. Pulls the user's provider tokens from the
+vault and delegates the call to the matching connector.
 
-실행:
+Run:
+
 ```
 npm run mcp
 ```
 
-이 폴더 = open source 부분.
+This folder is the open-source surface of the gateway.

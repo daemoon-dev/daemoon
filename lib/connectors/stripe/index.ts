@@ -1,11 +1,11 @@
 /* Daemoon — Stripe connector.
  *
- * Stripe 는 *OAuth (Stripe Connect)* 가 따로 있지만 MVP 에서는 PAT (Secret key) 만 사용.
- *   1) 사용자가 dashboard.stripe.com/apikeys 에서 sk_test_… / sk_live_… 복사
- *   2) Daemoon 가 GET /v1/account 로 유효성 검증
- *   3) vault 저장 후 사용
+ * Stripe has *OAuth (Stripe Connect)* but for MVP we only use a PAT (Secret key).
+ *   1) User copies sk_test_… / sk_live_… from dashboard.stripe.com/apikeys
+ *   2) Daemoon validates via GET /v1/account
+ *   3) Stored in vault and used
  *
- * MVP 도구:
+ * MVP tools:
  *   1) stripe.list_products({ limit? })
  *   2) stripe.list_customers({ limit?, email? })
  *   3) stripe.create_payment_link({ price, quantity? })
@@ -66,7 +66,7 @@ const listProducts: ToolDef<
   { products: Array<{ id: string; name: string; active: boolean; description: string | null }>; has_more: boolean }
 > = {
   name: "stripe.list_products",
-  description: "Stripe products 목록.",
+  description: "List Stripe products.",
   inputSchema: {
     type: "object",
     properties: { limit: { type: "number", minimum: 1, maximum: 100, default: 10 } },
@@ -90,7 +90,7 @@ const listCustomers: ToolDef<
   { customers: Array<{ id: string; email: string | null; name: string | null; created: number }>; has_more: boolean }
 > = {
   name: "stripe.list_customers",
-  description: "Stripe customers 목록. email 로 필터 가능.",
+  description: "List Stripe customers. Filter by email if provided.",
   inputSchema: {
     type: "object",
     properties: {
@@ -120,7 +120,7 @@ const createPaymentLink: ToolDef<
   { id: string; url: string; active: boolean }
 > = {
   name: "stripe.create_payment_link",
-  description: "지정 price 로 Payment Link 생성.",
+  description: "Create a Payment Link for the given price.",
   inputSchema: {
     type: "object",
     properties: {

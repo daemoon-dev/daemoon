@@ -1,8 +1,8 @@
-/* OAuth start — 동적 provider routing.
+/* OAuth start — dynamic provider routing.
  *
  *   GET /api/oauth/vercel/start?return=/dashboard
  *
- *   → connector.oauthStart 호출 → state 발급 (cookie 저장) → 302 to authorize_url
+ *   → call connector.oauthStart → issue state (stored in cookie) → 302 to authorize_url
  */
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";

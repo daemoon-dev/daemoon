@@ -1,8 +1,8 @@
-/* HTTP MCP endpoint — Claude Code / Cursor 등이 호출.
+/* HTTP MCP endpoint — called by Claude Code / Cursor / etc.
  *
- * 인증:
- *   1) `Authorization: Bearer dmn_xxx` (PAT)  → MCP client 용 (주된 경로)
- *   2) 세션 쿠키 → 로그인된 브라우저 호출 (대시보드 디버그용)
+ * Auth:
+ *   1) `Authorization: Bearer dmn_xxx` (PAT) → primary path for MCP clients
+ *   2) Session cookie → logged-in browser calls (for dashboard debugging)
  *
  * POST /api/mcp
  * { "method": "tools/list" }

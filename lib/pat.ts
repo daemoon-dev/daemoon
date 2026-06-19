@@ -1,8 +1,8 @@
-/* Daemoon PAT (personal access token) — MCP 인증용.
+/* Daemoon PAT (personal access token) — used to authenticate MCP requests.
  *
- * 토큰 형식: dmn_<24bytes-base64url>
- *   - DB 에는 sha256(raw) 만 저장. raw 는 생성 직후 1번 노출.
- *   - lookup: 들어온 Bearer 의 sha256 으로 daemoon_pats 조회 → user_id.
+ * Token format: dmn_<24bytes-base64url>
+ *   - DB stores only sha256(raw). The raw token is shown exactly once at creation.
+ *   - Lookup: hash the incoming Bearer with sha256, find row in daemoon_pats → user_id.
  */
 import { createHash, randomBytes } from "crypto";
 import { getServiceClient } from "@/lib/supabase/service";

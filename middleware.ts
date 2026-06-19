@@ -1,7 +1,7 @@
 /* Next.js middleware — Supabase session refresh.
  *
- * 모든 요청에 *cookie 기반 세션 갱신* 실행 → 만료 토큰 자동 refresh.
- * Auth 강제 redirect 는 페이지/route 단에서 (이 미들웨어는 *session 살아있게만*).
+ * Runs *cookie-based session refresh* on every request → expired tokens auto-refresh.
+ * Auth-gating redirects happen at the page/route level (this middleware *only keeps the session alive*).
  */
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    /* 정적 파일 + favicon + API/oauth 외 모든 path 매치. */
+    /* Match all paths except static files, favicon, and image assets. */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

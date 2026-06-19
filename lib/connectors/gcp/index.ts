@@ -1,12 +1,12 @@
 /* Daemoon — Google Cloud Platform connector.
  *
- * 인증: Service Account JSON 키 paste. 유저가 콘솔에서 만들어 붙여넣음.
- *   - JSON 안에 private_key + client_email → JWT 서명 → access_token 교환
- *   - token 은 1시간 짜리. 매 호출시 JWT 생성 (간단 MVP).
+ * Auth: paste a Service Account JSON key (user creates one in the console).
+ *   - JSON contains private_key + client_email → sign JWT → exchange for access_token
+ *   - Token lives 1 hour. We mint a new JWT per call (simple MVP).
  *
- * MVP 도구:
+ * MVP tools:
  *   1) gcp.list_projects()
- *   2) gcp.list_services({ projectId })  — 활성화된 API 목록
+ *   2) gcp.list_services({ projectId })  — list enabled APIs
  */
 import { createSign } from "crypto";
 import type { Connector, ToolContext, ToolDef } from "../types";
@@ -66,7 +66,7 @@ function reqTok(ctx: ToolContext): string {
 
 const listProjects: ToolDef<Record<string, never>, { projects: Array<{ projectId: string; name: string; lifecycleState: string }> }> = {
   name: "gcp.list_projects",
-  description: "내 GCP 프로젝트 목록.",
+  description: "List my GCP projects.",
   inputSchema: { type: "object", properties: {}, additionalProperties: false },
   async handler(_args, ctx) {
     const sa = parseSAKey(reqTok(ctx));
@@ -82,7 +82,7 @@ const listProjects: ToolDef<Record<string, never>, { projects: Array<{ projectId
 
 const listServices: ToolDef<{ projectId: string }, { services: Array<{ name: string; state: string }> }> = {
   name: "gcp.list_services",
-  description: "특정 프로젝트의 활성화된 GCP API/서비스 목록.",
+  description: "List enabled GCP APIs/services for a project.",
   inputSchema: {
     type: "object",
     properties: { projectId: { type: "string", minLength: 4 } },

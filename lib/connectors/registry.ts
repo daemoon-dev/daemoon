@@ -1,6 +1,6 @@
-/* Daemoon connector registry — provider id → Connector 매핑 단일 source.
+/* Daemoon connector registry — single source for provider id → Connector mapping.
  *
- * 새 provider 추가 시 여기에 import + 등록만 하면 MCP/OAuth/UI 모두 자동 반영.
+ * To add a provider, import and register it here; MCP, OAuth, and UI pick it up automatically.
  */
 import type { Connector } from "./types";
 import { vercelConnector } from "./vercel";

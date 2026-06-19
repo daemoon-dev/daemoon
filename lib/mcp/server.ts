@@ -1,16 +1,17 @@
 /* Daemoon MCP server.
  *
- * MCP 표준 SDK 위에서 *AI 에이전트가 호출하는 단일 endpoint*.
+ * Single endpoint that AI agents call, built on the standard MCP SDK.
  *
- * Tool naming: "<provider>.<action>" — connector 가 정의한 그대로 expose.
- *   예: vercel.list_projects / vercel.create_project / vercel.deploy
+ * Tool naming: "<provider>.<action>" — exposed exactly as the connector defines.
+ *   e.g. vercel.list_projects / vercel.create_project / vercel.deploy
  *
- * 인증: MCP 호출 시 Daemoon 가 *사용자 식별 토큰* 을 받음 (env var DAEMOON_USER_TOKEN
- *       또는 MCP transport 의 custom header). 해당 토큰으로 vault 에서 provider token 꺼냄.
+ * Auth: each MCP call carries a *user identity token* (env var DAEMOON_USER_TOKEN
+ *       or a custom MCP transport header). That token is used to pull the provider
+ *       token out of the vault.
  *
- * 보안:
- *   - provider token 은 *절대 MCP 응답에 포함 X* — 도구 결과만 반환
- *   - 모든 호출 → audit log (Supabase, 별도 테이블) 권장 (Phase 2)
+ * Security:
+ *   - Provider tokens *never appear in MCP responses* — only tool results.
+ *   - Every call should be audit-logged (Supabase, separate table) — Phase 2.
  */
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -21,7 +22,7 @@ import { loadToken } from "../vault/store";
 import type { ToolContext } from "../connectors/types";
 
 interface DaemoonMcpOptions {
-  /** 호출자의 Daemoon 사용자 id — vault key. */
+  /** Caller's Daemoon user id — vault key. */
   userId: string;
 }
 
@@ -31,7 +32,7 @@ export function createDaemoonMcpServer(opts: DaemoonMcpOptions): Server {
     { capabilities: { tools: {} } },
   );
 
-  // tools/list — 모든 connector 의 도구 평탄화
+  // tools/list — flatten tools across all connectors
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const tools = listConnectors().flatMap(c =>
       c.tools.map(t => ({
@@ -43,7 +44,7 @@ export function createDaemoonMcpServer(opts: DaemoonMcpOptions): Server {
     return { tools };
   });
 
-  // tools/call — provider 식별 → vault token → handler
+  // tools/call — resolve provider → fetch vault token → run handler
   server.setRequestHandler(CallToolRequestSchema, async req => {
     const [providerId] = req.params.name.split(".");
     const connector = getConnector(providerId);
@@ -74,7 +75,7 @@ export function createDaemoonMcpServer(opts: DaemoonMcpOptions): Server {
   return server;
 }
 
-/** stdio 모드로 실행 (Claude Code 등이 직접 spawn 할 때). */
+/** Run over stdio (used when Claude Code etc. spawns the server directly). */
 export async function runStdio(userId: string): Promise<void> {
   const server = createDaemoonMcpServer({ userId });
   const transport = new StdioServerTransport();

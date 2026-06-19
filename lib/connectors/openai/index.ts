@@ -1,11 +1,11 @@
 /* Daemoon — OpenAI connector.
  *
- * OpenAI = LLM/embedding/image gen. OAuth 없음 — API key (sk-…) 만.
- *   1) 사용자가 platform.openai.com/api-keys 에서 token 발급
- *   2) Daemoon 가 GET /models 로 유효성 검증
- *   3) vault 저장 후 사용
+ * OpenAI = LLM/embedding/image gen. No OAuth — API key (sk-…) only.
+ *   1) User creates a token at platform.openai.com/api-keys
+ *   2) Daemoon validates via GET /models
+ *   3) Stored in vault and used
  *
- * MVP 도구:
+ * MVP tools:
  *   1) openai.list_models()
  *   2) openai.chat_completion({ model, messages, max_tokens? })
  */
@@ -50,7 +50,7 @@ interface ChatCompletionResponse {
 
 const listModels: ToolDef<Record<string, never>, { models: string[] }> = {
   name: "openai.list_models",
-  description: "내 OpenAI 키로 사용 가능한 model id 목록.",
+  description: "List model ids available to my OpenAI key.",
   inputSchema: { type: "object", properties: {}, additionalProperties: false },
   async handler(_args, ctx) {
     const token = reqTok(ctx);
@@ -64,7 +64,7 @@ const chatCompletion: ToolDef<
   { id: string; model: string; content: string | null; finish_reason: string | null; usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number } }
 > = {
   name: "openai.chat_completion",
-  description: "OpenAI Chat Completions API 호출.",
+  description: "Call the OpenAI Chat Completions API.",
   inputSchema: {
     type: "object",
     properties: {

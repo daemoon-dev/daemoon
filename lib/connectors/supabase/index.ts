@@ -1,11 +1,11 @@
 /* Daemoon — Supabase connector (Management API).
  *
- * Supabase Management 는 *Personal Access Token (PAT)* 만 — OAuth 없음.
- * 사용자가 https://supabase.com/dashboard/account/tokens 에서 만들어 paste.
+ * Supabase Management uses *Personal Access Token (PAT)* only — no OAuth.
+ * User creates one at https://supabase.com/dashboard/account/tokens and pastes it.
  *
  * API base: https://api.supabase.com (Bearer PAT)
  *
- * MVP 도구:
+ * MVP tools:
  *   1) supabase.list_projects()
  *   2) supabase.create_project({ name, region, organization_id, db_password })
  *   3) supabase.run_sql({ projectRef, query })
@@ -35,7 +35,7 @@ function reqTok(ctx: ToolContext): string {
 
 const listProjects: ToolDef<Record<string, never>, { projects: Array<{ id: string; name: string; region: string; status: string }> }> = {
   name: "supabase.list_projects",
-  description: "내 Supabase 프로젝트 목록.",
+  description: "List my Supabase projects.",
   inputSchema: { type: "object", properties: {}, additionalProperties: false },
   async handler(_args, ctx) {
     const token = reqTok(ctx);
@@ -49,7 +49,7 @@ const listProjects: ToolDef<Record<string, never>, { projects: Array<{ id: strin
 
 const runSql: ToolDef<{ projectRef: string; query: string }, { result: unknown }> = {
   name: "supabase.run_sql",
-  description: "특정 Supabase 프로젝트에 SQL 실행. SELECT/DDL/DML 모두. RPC 만들 때 유용.",
+  description: "Run SQL against a Supabase project. SELECT/DDL/DML all allowed. Useful for creating RPCs.",
   inputSchema: {
     type: "object",
     properties: {
@@ -73,7 +73,7 @@ const runSql: ToolDef<{ projectRef: string; query: string }, { result: unknown }
 export const supabaseConnector: Connector = {
   id: "supabase",
   label: "Supabase",
-  // v0.6 — Supabase Management OAuth 도 지원. PAT 도 fallback.
+  // v0.6 — Supabase Management OAuth supported; PAT remains as fallback.
   oauthSupported: true,
 
   oauthStart(redirectUri, state) {

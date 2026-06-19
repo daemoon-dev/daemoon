@@ -1,6 +1,6 @@
 /* Daemoon dashboard — account header + MCP install + provider connections.
  *
- * Server component — 로그인 강제 + DB 에서 연결 상태 fetch.
+ * Server component — enforces login and fetches connection state from DB.
  */
 import { redirect } from "next/navigation";
 import { listConnectors } from "@/lib/connectors/registry";

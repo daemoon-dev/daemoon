@@ -1,4 +1,4 @@
-/* PAT 입력 페이지 — Cloudflare / Supabase / Vercel / GitHub 공용. */
+/* PAT input page — shared by Cloudflare / Supabase / Vercel / GitHub. */
 "use client";
 
 import { useState, useEffect, use } from "react";
@@ -17,8 +17,8 @@ const INFO: Record<string, ProviderUiInfo> = {
     label: "Cloudflare",
     instruction: (
       <>
-        Cloudflare dashboard → My Profile → API Tokens → <b>Create Token</b> → \"Edit zone DNS\"
-        template 또는 Custom token (Zone:Read + DNS:Edit). 생성된 token 을 아래 붙여넣기.
+        Cloudflare dashboard → My Profile → API Tokens → <b>Create Token</b> → use the
+        &quot;Edit zone DNS&quot; template or a Custom token (Zone:Read + DNS:Edit). Paste the token below.
       </>
     ),
     helpUrl: "https://dash.cloudflare.com/profile/api-tokens",
@@ -28,7 +28,7 @@ const INFO: Record<string, ProviderUiInfo> = {
     label: "Supabase",
     instruction: (
       <>
-        Supabase dashboard → Account → Access Tokens → <b>Generate new token</b>. 표시되는 PAT 를 아래 붙여넣기.
+        Supabase dashboard → Account → Access Tokens → <b>Generate new token</b>. Paste the PAT below.
       </>
     ),
     helpUrl: "https://supabase.com/dashboard/account/tokens",
@@ -38,7 +38,7 @@ const INFO: Record<string, ProviderUiInfo> = {
     label: "Vercel",
     instruction: (
       <>
-        Vercel → Settings → Tokens → <b>Create</b>. Scope 는 \"Full Account\" 또는 사용할 team. 토큰 붙여넣기.
+        Vercel → Settings → Tokens → <b>Create</b>. Scope: &quot;Full Account&quot; or the team you want to use. Paste the token below.
       </>
     ),
     helpUrl: "https://vercel.com/account/tokens",
@@ -59,7 +59,7 @@ const INFO: Record<string, ProviderUiInfo> = {
     label: "Google Cloud",
     instruction: (
       <>
-        GCP Console → IAM & Admin → Service Accounts → <b>Create</b> (or pick existing) → Keys 탭 → <b>Add Key › Create new key › JSON</b> → JSON 파일 download → 내용 전체 붙여넣기.
+        GCP Console → IAM & Admin → Service Accounts → <b>Create</b> (or pick existing) → Keys tab → <b>Add Key › Create new key › JSON</b> → download the JSON file → paste the full contents below.
       </>
     ),
     helpUrl: "https://console.cloud.google.com/iam-admin/serviceaccounts",

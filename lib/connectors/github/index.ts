@@ -8,7 +8,7 @@
  *
  * API base: https://api.github.com (Bearer token)
  *
- * MVP 도구:
+ * MVP tools:
  *   1) github.list_repos()
  *   2) github.create_repo({ name, private })
  *   3) github.push_initial_commit({ owner, repo, files })  // tree+commit API
@@ -39,7 +39,7 @@ function reqTok(ctx: ToolContext): string {
 
 const listRepos: ToolDef<{ limit?: number }, { repos: Array<{ id: number; name: string; full_name: string; private: boolean }> }> = {
   name: "github.list_repos",
-  description: "내 GitHub 저장소 목록 (최신순).",
+  description: "List my GitHub repos (most recently updated first).",
   inputSchema: {
     type: "object",
     properties: { limit: { type: "number", minimum: 1, maximum: 100, default: 30 } },
@@ -57,7 +57,7 @@ const listRepos: ToolDef<{ limit?: number }, { repos: Array<{ id: number; name: 
 
 const createRepo: ToolDef<{ name: string; private?: boolean; description?: string }, { id: number; name: string; full_name: string; clone_url: string }> = {
   name: "github.create_repo",
-  description: "신규 저장소 생성 (private 기본). description 선택.",
+  description: "Create a new repo (private by default). description is optional.",
   inputSchema: {
     type: "object",
     properties: {

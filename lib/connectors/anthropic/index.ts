@@ -1,13 +1,13 @@
 /* Daemoon — Anthropic connector.
  *
- * Anthropic = Claude API. OAuth 없음 — API key (sk-ant-…) 만.
- *   - 인증 헤더는 *Bearer 아닌* `x-api-key`.
- *   - 모든 요청에 `anthropic-version: 2023-06-01` 필수.
- *   1) 사용자가 console.anthropic.com/settings/keys 에서 token 발급
- *   2) Daemoon 가 POST /messages 에 1-token ping 으로 검증
- *   3) vault 저장 후 사용
+ * Anthropic = Claude API. No OAuth — API key (sk-ant-…) only.
+ *   - Auth header is *not Bearer* — it's `x-api-key`.
+ *   - Every request requires `anthropic-version: 2023-06-01`.
+ *   1) User creates a token at console.anthropic.com/settings/keys
+ *   2) Daemoon validates with a 1-token ping to POST /messages
+ *   3) Stored in vault and used
  *
- * MVP 도구:
+ * MVP tools:
  *   1) anthropic.create_message({ model, messages, max_tokens? })
  */
 import type { Connector, ToolContext, ToolDef } from "../types";
@@ -54,7 +54,7 @@ const createMessage: ToolDef<
   { id: string; model: string; text: string; stop_reason: string | null; usage?: { input_tokens: number; output_tokens: number } }
 > = {
   name: "anthropic.create_message",
-  description: "Anthropic Messages API 호출 (Claude).",
+  description: "Call the Anthropic Messages API (Claude).",
   inputSchema: {
     type: "object",
     properties: {

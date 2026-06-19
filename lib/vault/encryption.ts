@@ -1,40 +1,40 @@
 /* Daemoon token vault — envelope encryption.
  *
  * Threat model:
- *   - DB 가 통째로 유출되어도 토큰이 평문 노출되면 안 됨 (= env 의 master key 없으면 못 풀게).
- *   - master key 가 유출돼도 일부 토큰만 영향 받아야 함 (= per-token DEK).
+ *   - A full DB leak must not expose plaintext tokens (= unusable without the env master key).
+ *   - A master key leak must only affect some tokens (= per-token DEK).
  *
  * Envelope pattern:
- *   1. 매 토큰마다 *Data Encryption Key (DEK)* 32 byte 랜덤 생성.
- *   2. 토큰 본문을 *DEK + AES-256-GCM* 으로 암호화 → ciphertext.
- *   3. DEK 를 *master key + AES-256-GCM* 으로 한 번 더 암호화 → wrappedDek.
- *   4. DB 에 저장: { ciphertext, iv1, tag1, wrappedDek, iv2, tag2 }.
- *   5. 복호화: master → DEK → token.
+ *   1. Generate a fresh 32-byte *Data Encryption Key (DEK)* per token.
+ *   2. Encrypt the token body with *DEK + AES-256-GCM* → ciphertext.
+ *   3. Encrypt the DEK with *master key + AES-256-GCM* → wrappedDek.
+ *   4. Store in DB: { ciphertext, iv1, tag1, wrappedDek, iv2, tag2 }.
+ *   5. Decrypt: master → DEK → token.
  *
- * 회전 (key rotation):
- *   - master key 회전 시 wrappedDek 만 재암호화. ciphertext 는 그대로.
- *   - DEK 회전 시 그 토큰만 영향.
+ * Key rotation:
+ *   - Rotating the master key only re-encrypts wrappedDek; ciphertext is untouched.
+ *   - Rotating the DEK only affects that one token.
  *
- * Node `crypto` (built-in) 사용 — 외부 의존 X. Web Crypto 도 같은 알고리즘.
+ * Uses Node's built-in `crypto` — no external deps. Web Crypto would use the same algorithm.
  */
 import { randomBytes, createCipheriv, createDecipheriv } from "node:crypto";
 
 const ALGO = "aes-256-gcm";
 
 export interface EncryptedToken {
-  /** Base64 — DEK 로 암호화된 토큰 본문. */
+  /** Base64 — token body encrypted with the DEK. */
   ciphertext: string;
-  /** Base64 — ciphertext 의 GCM IV (12 byte). */
+  /** Base64 — GCM IV for ciphertext (12 bytes). */
   iv1: string;
-  /** Base64 — ciphertext 의 GCM auth tag (16 byte). */
+  /** Base64 — GCM auth tag for ciphertext (16 bytes). */
   tag1: string;
-  /** Base64 — master key 로 암호화된 DEK. */
+  /** Base64 — DEK encrypted with the master key. */
   wrappedDek: string;
-  /** Base64 — wrappedDek 의 GCM IV. */
+  /** Base64 — GCM IV for wrappedDek. */
   iv2: string;
-  /** Base64 — wrappedDek 의 GCM auth tag. */
+  /** Base64 — GCM auth tag for wrappedDek. */
   tag2: string;
-  /** master key 버전 (회전 대응). */
+  /** Master key version (supports rotation). */
   keyVersion: number;
 }
 
@@ -55,7 +55,7 @@ function aesDecrypt(key: Buffer, ct: Buffer, iv: Buffer, tag: Buffer): Buffer {
 function getMasterKey(): { key: Buffer; version: number } {
   const raw = process.env.DAEMOON_VAULT_MASTER_KEY;
   if (!raw) throw new Error("DAEMOON_VAULT_MASTER_KEY not configured");
-  // 형식: "v1:<base64-32byte>" — version prefix.
+  // Format: "v1:<base64-32byte>" — version prefix.
   const m = /^v(\d+):(.+)$/.exec(raw.trim());
   if (!m) throw new Error("master key format invalid (expect v<n>:<base64>)");
   const version = Number(m[1]);
@@ -83,7 +83,7 @@ export function encryptToken(token: string): EncryptedToken {
 export function decryptToken(enc: EncryptedToken): string {
   const { key: master, version } = getMasterKey();
   if (enc.keyVersion !== version) {
-    // 회전 미완료 — 다른 버전 키 로딩 path 필요. MVP 에선 fail-fast.
+    // MVP fail-fast: we don't yet have a path to load older key versions.
     // Don't leak version numbers in the error message (info leak).
     throw new Error("vault key version mismatch");
   }

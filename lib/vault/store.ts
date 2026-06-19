@@ -1,6 +1,6 @@
-/* Daemoon vault store — Supabase 기반 per-user token 보관.
+/* Daemoon vault store — per-user token storage backed by Supabase.
  *
- * 스키마 (Supabase):
+ * Schema (Supabase):
  *   create table public.daemoon_tokens (
  *     id            uuid primary key default gen_random_uuid(),
  *     user_id       uuid not null references auth.users(id) on delete cascade,
@@ -12,19 +12,19 @@
  *     iv2           text not null,
  *     tag2          text not null,
  *     key_version   int  not null,
- *     refresh_token_enc jsonb,                  -- refresh token 도 같은 envelope
+ *     refresh_token_enc jsonb,                  -- refresh token uses the same envelope
  *     expires_at    timestamptz,
- *     provider_user_id text,                    -- provider 측 식별자
+ *     provider_user_id text,                    -- provider-side identifier
  *     meta          jsonb,
  *     created_at    timestamptz not null default now(),
  *     updated_at    timestamptz not null default now(),
  *     unique (user_id, provider)
  *   );
  *   alter table public.daemoon_tokens enable row level security;
- *   -- RLS: anon/auth 모두 SELECT/INSERT/UPDATE 차단. service_role 만.
+ *   -- RLS: block SELECT/INSERT/UPDATE for anon and authenticated. service_role only.
  *   revoke all on public.daemoon_tokens from anon, authenticated;
  *
- * 모든 vault 접근은 *service_role* 키 사용 (서버 사이드만).
+ * All vault access uses the *service_role* key (server-side only).
  */
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { encryptToken, decryptToken, type EncryptedToken } from "./encryption";

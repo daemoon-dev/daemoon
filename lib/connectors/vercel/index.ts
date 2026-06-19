@@ -3,12 +3,12 @@
  * OAuth (Vercel Integration / OAuth App):
  *   - authorize:  https://vercel.com/oauth/authorize
  *   - exchange:   POST https://api.vercel.com/v2/oauth/access_token
- *   - 환경변수:    VERCEL_CLIENT_ID, VERCEL_CLIENT_SECRET (Daemoon 의 Vercel Integration 등록 후)
+ *   - env vars:   VERCEL_CLIENT_ID, VERCEL_CLIENT_SECRET (set after registering the Daemoon Vercel Integration)
  *
  * Vercel API base: https://api.vercel.com
- * 인증 헤더: Authorization: Bearer <token>
+ * Auth header: Authorization: Bearer <token>
  *
- * MVP 도구 (3개):
+ * MVP tools (3):
  *   1) vercel.list_projects()
  *   2) vercel.create_project({ name, framework })
  *   3) vercel.create_deployment({ projectId, gitRepoId, teamId? })
@@ -59,12 +59,12 @@ const listProjects: ToolDef<
   { projects: Array<{ id: string; name: string; framework: string | null }> }
 > = {
   name: "vercel.list_projects",
-  description: "Vercel 의 내 프로젝트 목록 (최대 100). teamId 주면 해당 team 의 프로젝트.",
+  description: "List my Vercel projects (up to 100). Pass teamId to list a team's projects.",
   inputSchema: {
     type: "object",
     properties: {
       limit: { type: "number", minimum: 1, maximum: 100, default: 20 },
-      teamId: { type: "string", description: "Vercel team id (team_…). 생략하면 personal." },
+      teamId: { type: "string", description: "Vercel team id (team_…). Omit for personal." },
     },
     additionalProperties: false,
   },
@@ -84,7 +84,7 @@ const createProject: ToolDef<
   { id: string; name: string }
 > = {
   name: "vercel.create_project",
-  description: "Vercel 신규 프로젝트 생성. name 은 url-safe 소문자.",
+  description: "Create a new Vercel project. name must be url-safe lowercase.",
   inputSchema: {
     type: "object",
     properties: {
@@ -117,7 +117,7 @@ const createDeployment: ToolDef<
   { id: string; url: string; readyState: string }
 > = {
   name: "vercel.create_deployment",
-  description: "GitHub repo 의 특정 ref (default 'main') 를 Vercel 프로젝트에 production 배포 trigger.",
+  description: "Trigger a production deployment of a GitHub repo ref (default 'main') to a Vercel project.",
   inputSchema: {
     type: "object",
     properties: {
@@ -157,7 +157,7 @@ const createDeployment: ToolDef<
 export const vercelConnector: Connector = {
   id: "vercel",
   label: "Vercel",
-  // MVP: 둘 다 지원. UI 에서 OAuth 우선 노출, 환경변수 없으면 PAT 입력 form.
+  // MVP: support both. UI prefers OAuth; falls back to a PAT form if env vars are missing.
   oauthSupported: true,
 
   async validatePat(pat: string) {

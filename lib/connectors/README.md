@@ -1,19 +1,32 @@
 # Daemoon Provider Connectors
 
-각 폴더 = 한 provider:
-- cloudflare/
-- github/
-- vercel/
-- supabase/
+Each folder is one provider:
 
-각 connector 가 노출하는 interface:
+- `vercel/`
+- `github/`
+- `cloudflare/`
+- `supabase/`
+- `gcp/`
+- `stripe/`
+- `resend/`
+- `openai/`
+- `anthropic/`
+
+Every connector implements this interface:
+
 ```ts
 export interface Connector {
-  id: string                      // 'cloudflare', 'github', ...
-  oauth?(state): { authorizeUrl } // OAuth 시작
-  exchange?(code): { token }      // OAuth callback → token
-  tools: ToolDef[]                // MCP 가 expose 할 액션 list
+  id: string;                       // 'cloudflare', 'github', ...
+  label: string;                    // human-friendly name
+  oauthSupported: boolean;
+  oauthStart?(redirectUri, state): { authorizeUrl };
+  oauthExchange?(code, redirectUri): Promise<{ token, ... }>;
+  validatePat?(pat): Promise<{ ok: boolean; reason?: string; meta?: object }>;
+  tools: ToolDef[];                 // actions the MCP server exposes
 }
 ```
 
-이 폴더 = open source 부분.
+Connectors are stateless. Tokens are loaded from the vault and passed to
+handlers via `ctx.token`. They never see the user's PAT directly.
+
+This folder is the open-source surface of the gateway.

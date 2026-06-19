@@ -1,11 +1,11 @@
 /* Daemoon — Resend connector.
  *
- * Resend = transactional email API. OAuth 없음 — API key (re_…) 만.
- *   1) 사용자가 resend.com/api-keys 에서 token 발급
- *   2) Daemoon 가 GET /domains 로 유효성 검증
- *   3) vault 저장 후 사용
+ * Resend = transactional email API. No OAuth — API key (re_…) only.
+ *   1) User creates a token at resend.com/api-keys
+ *   2) Daemoon validates via GET /domains
+ *   3) Stored in vault and used
  *
- * MVP 도구:
+ * MVP tools:
  *   1) resend.send_email({ from, to, subject, html?, text? })
  *   2) resend.list_domains()
  */
@@ -45,7 +45,7 @@ const sendEmail: ToolDef<
   { id: string }
 > = {
   name: "resend.send_email",
-  description: "이메일 발송. from 도메인은 미리 verify 되어 있어야 함.",
+  description: "Send an email. The from-domain must be verified beforehand.",
   inputSchema: {
     type: "object",
     properties: {
@@ -82,7 +82,7 @@ const listDomains: ToolDef<
   { domains: Array<{ id: string; name: string; status: string; region?: string }> }
 > = {
   name: "resend.list_domains",
-  description: "내 Resend domains 목록.",
+  description: "List my Resend domains.",
   inputSchema: { type: "object", properties: {}, additionalProperties: false },
   async handler(_args, ctx) {
     const token = reqTok(ctx);
