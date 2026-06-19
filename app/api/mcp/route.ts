@@ -75,7 +75,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "forbidden_origin" }, { status: 403 });
     }
     const userId = await resolveUserId(req);
-    if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
+    if (!userId) {
+      // RFC 9728: tell OAuth-aware clients where to find Protected Resource Metadata.
+      return NextResponse.json(
+        { error: "unauthenticated" },
+        {
+          status: 401,
+          headers: {
+            "www-authenticate":
+              'Bearer realm="https://daemoon.dev", resource_metadata="https://daemoon.dev/.well-known/oauth-protected-resource"',
+          },
+        },
+      );
+    }
     const body = await req.json();
     const method = body?.method as string | undefined;
 
