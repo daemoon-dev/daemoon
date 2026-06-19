@@ -1,0 +1,51 @@
+{
+  "name": "daemoon-mcp",
+  "version": "1.0.0",
+  "description": "Stdio MCP shim for Daemoon — one Bearer token for Vercel, GitHub, Cloudflare, Supabase, GCP, Stripe, Resend, OpenAI, Anthropic.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "daemoon-mcp": "src/index.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude-code",
+    "cursor",
+    "vercel",
+    "github",
+    "cloudflare",
+    "supabase",
+    "gcp",
+    "stripe",
+    "resend",
+    "openai",
+    "anthropic"
+  ],
+  "author": "Daemoon",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daemoon-dev/daemoon.git",
+    "directory": "npm-shim"
+  },
+  "homepage": "https://daemoon.dev",
+  "bugs": {
+    "url": "https://github.com/daemoon-dev/daemoon/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  }
+}
