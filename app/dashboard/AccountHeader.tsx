@@ -20,13 +20,23 @@ export function AccountHeader({ email }: { email: string }) {
         <div className="text-xl font-bold">Daemoon</div>
         <div className="text-xs text-neutral-500">{email}</div>
       </div>
-      <button
-        onClick={signOut}
-        disabled={busy}
-        className="px-3 py-1.5 text-xs rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
-      >
-        {busy ? "Signing out…" : "Sign out"}
-      </button>
+      <div className="flex items-center gap-3">
+        <a
+          href="https://github.com/daemoon-dev/daemoon/issues"
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs text-neutral-500 hover:text-neutral-300"
+        >
+          Feedback
+        </a>
+        <button
+          onClick={signOut}
+          disabled={busy}
+          className="px-3 py-1.5 text-xs rounded-md border border-neutral-700 text-neutral-300 hover:bg-neutral-800 disabled:opacity-50"
+        >
+          {busy ? "Signing out…" : "Sign out"}
+        </button>
+      </div>
     </div>
   );
 }

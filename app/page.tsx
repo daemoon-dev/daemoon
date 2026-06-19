@@ -106,6 +106,25 @@ export default function Home() {
         <p className="mt-4 text-xs text-neutral-700 text-center">
           MCP-native · open core · per-user encrypted vault
         </p>
+        <p className="mt-4 text-xs text-neutral-600 text-center">
+          <a
+            href="https://github.com/daemoon-dev/daemoon"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-neutral-300"
+          >
+            GitHub
+          </a>
+          {" · "}
+          <a
+            href="https://github.com/daemoon-dev/daemoon/issues"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-neutral-300"
+          >
+            Feedback
+          </a>
+        </p>
       </div>
     </main>
   );
