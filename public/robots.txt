@@ -1,0 +1,37 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /oauth/
+Disallow: /auth/
+
+# Explicit allows for major AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# LLM-friendly discovery
+# llms.txt:        https://daemoon.dev/llms.txt
+# MCP server card: https://daemoon.dev/.well-known/mcp.json
+# AI plugin:       https://daemoon.dev/.well-known/ai-plugin.json
+# OAuth PRM:       https://daemoon.dev/.well-known/oauth-protected-resource
+# OAuth AS meta:   https://daemoon.dev/.well-known/oauth-authorization-server
+
+Sitemap: https://daemoon.dev/sitemap.xml

@@ -27,14 +27,33 @@ Daemoon ends that. One sign-in connects everything. One token wires the agent.
 
 ## Install
 
-Generate your token at [daemoon.dev/dashboard](https://daemoon.dev/dashboard), then paste this into your Claude Code chat:
+Generate your token once at [daemoon.dev/dashboard](https://daemoon.dev/dashboard), then point your agent at `https://daemoon.dev/api/mcp` with header `Authorization: Bearer dmn_...`.
+
+### Claude Code
+
+Paste this in the Claude Code chat — Claude runs the install:
 
 ```
 Install the Daemoon MCP server for me by running:
 claude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header "Authorization: Bearer dmn_..."
 ```
 
-Claude runs the install. Done.
+### Cursor
+
+`Settings → MCP → Add server → HTTP`:
+- URL: `https://daemoon.dev/api/mcp`
+- Headers: `Authorization: Bearer dmn_...`
+
+### Cline / Continue / Zed / any MCP client
+
+Add an HTTP MCP server pointing at `https://daemoon.dev/api/mcp` with the bearer token header. Supports MCP Streamable HTTP (protocol `2025-06-18`) and OAuth 2.0 (DCR + PKCE) for clients that prefer it.
+
+### Machine-readable
+
+- `https://daemoon.dev/.well-known/mcp.json` — server card
+- `https://daemoon.dev/llms.txt` — agent-readable summary
+- `https://daemoon.dev/.well-known/oauth-protected-resource` — RFC 9728
+- `https://daemoon.dev/.well-known/oauth-authorization-server` — RFC 8414
 
 ## Connected providers
 
