@@ -68,6 +68,7 @@ Add an HTTP MCP server pointing at `https://daemoon.dev/api/mcp` with the bearer
 | Resend       | PAT           | `resend.send_email`, `resend.list_domains`       |
 | OpenAI       | PAT           | `openai.list_models`, `openai.chat_completion`   |
 | Anthropic    | PAT           | `anthropic.create_message`                       |
+| npm          | PAT (Automation / Granular) | `npm.whoami`, `npm.list_packages`, `npm.view` |
 
 More providers (Linear · Sentry · PostHog · Neon · Upstash · …) on the roadmap. PRs welcome.
 

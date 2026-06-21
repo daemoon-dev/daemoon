@@ -104,6 +104,17 @@ const INFO: Record<string, ProviderUiInfo> = {
     ),
     helpUrl: "https://console.anthropic.com/settings/keys",
   },
+  npm: {
+    id: "npm",
+    label: "npm",
+    instruction: (
+      <>
+        npmjs.com → avatar → <b>Access Tokens</b> → <b>Generate New Token</b> →
+        Classic Token → type <b>Automation</b> (or Granular with read scope). Paste below.
+      </>
+    ),
+    helpUrl: "https://www.npmjs.com/settings/~/tokens",
+  },
 };
 
 export default function ConnectPatPage({ params }: { params: Promise<{ provider: string }> }) {

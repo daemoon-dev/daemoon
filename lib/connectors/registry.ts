@@ -12,6 +12,7 @@ import { stripeConnector } from "./stripe";
 import { resendConnector } from "./resend";
 import { openaiConnector } from "./openai";
 import { anthropicConnector } from "./anthropic";
+import { npmConnector } from "./npm";
 
 export const CONNECTORS: Record<string, Connector> = {
   [vercelConnector.id]: vercelConnector,
@@ -23,6 +24,7 @@ export const CONNECTORS: Record<string, Connector> = {
   [resendConnector.id]: resendConnector,
   [openaiConnector.id]: openaiConnector,
   [anthropicConnector.id]: anthropicConnector,
+  [npmConnector.id]: npmConnector,
 };
 
 export function getConnector(id: string): Connector {

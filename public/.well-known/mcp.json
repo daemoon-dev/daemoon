@@ -21,7 +21,7 @@
     }
   },
   "categories": ["devops", "infrastructure", "cloud", "deployment", "ai", "payments", "email"],
-  "providers": ["vercel", "github", "cloudflare", "supabase", "gcp", "stripe", "resend", "openai", "anthropic"],
+  "providers": ["vercel", "github", "cloudflare", "supabase", "gcp", "stripe", "resend", "openai", "anthropic", "npm"],
   "install": {
     "claudeCode": "claude mcp add --transport http daemoon https://daemoon.dev/api/mcp --header \"Authorization: Bearer <PAT>\"",
     "cursor": {
@@ -52,6 +52,9 @@
     "resend.list_domains",
     "openai.list_models",
     "openai.chat_completion",
-    "anthropic.create_message"
+    "anthropic.create_message",
+    "npm.whoami",
+    "npm.list_packages",
+    "npm.view"
   ]
 }
