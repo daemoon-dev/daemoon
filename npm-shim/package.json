@@ -1,6 +1,6 @@
 {
   "name": "daemoon-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Stdio MCP shim for Daemoon — one Bearer token for Vercel, GitHub, Cloudflare, Supabase, GCP, Stripe, Resend, OpenAI, Anthropic.",
   "type": "module",
   "main": "src/index.js",

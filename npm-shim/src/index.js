@@ -31,9 +31,12 @@ if (!TOKEN) {
   process.exit(1);
 }
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
+
+let rpcId = 0;
 
 async function call(method, params) {
+  const id = ++rpcId;
   const res = await fetch(ENDPOINT, {
     method: "POST",
     headers: {
@@ -41,7 +44,7 @@ async function call(method, params) {
       "Content-Type": "application/json",
       "User-Agent": `daemoon-mcp/${VERSION}`,
     },
-    body: JSON.stringify({ method, params }),
+    body: JSON.stringify({ jsonrpc: "2.0", id, method, params: params ?? {} }),
   });
   if (!res.ok) {
     const text = await res.text();
@@ -51,7 +54,8 @@ async function call(method, params) {
   }
   const data = await res.json();
   if (data.error) {
-    throw new Error(`Daemoon ${method}: ${data.error}`);
+    const msg = data.error.message ?? JSON.stringify(data.error);
+    throw new Error(`Daemoon ${method}: ${msg}`);
   }
   return data.result;
 }
